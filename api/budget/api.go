@@ -188,11 +188,8 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		defer discardClose(resp)
 	}
 	if resp.StatusCode != http.StatusOK {
-		var response string
-		err = json.NewDecoder(resp.Body).Decode(&response)
-		if err != nil {
-			return errors.Annotate(err, "failed to decode response error")
-		}
+		response := "http request failed"
+		json.NewDecoder(resp.Body).Decode(&response)
 		return wireformat.HttpError{
 			StatusCode: resp.StatusCode,
 			Message:    response,
