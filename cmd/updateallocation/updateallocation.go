@@ -9,7 +9,7 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/juju/environs/configstore"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
@@ -19,7 +19,7 @@ import (
 )
 
 type updateAllocationCommand struct {
-	envcmd.EnvCommandBase
+	modelcmd.ModelCommandBase
 	rcmd.HttpCommand
 	Name  string
 	Value string
@@ -27,7 +27,7 @@ type updateAllocationCommand struct {
 
 // NewUpdateAllocationCommand returns a new updateAllocationCommand.
 func NewUpdateAllocationCommand() cmd.Command {
-	return envcmd.Wrap(&updateAllocationCommand{})
+	return modelcmd.Wrap(&updateAllocationCommand{})
 }
 
 var newAPIClient = func(c *httpbakery.Client) (apiClient, error) {
@@ -58,14 +58,14 @@ func (c *updateAllocationCommand) Info() *cmd.Info {
 
 // SetFlags implements cmd.Command.
 func (c *updateAllocationCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.EnvCommandBase.SetFlags(f)
+	c.ModelCommandBase.SetFlags(f)
 }
 
 // AllowInterspersed implements cmd.Command.
 func (c *updateAllocationCommand) AllowInterspersedFlags() bool { return true }
 
 // IsSuperCommand implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and EnvCommandBase.
+// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
 func (c *updateAllocationCommand) IsSuperCommand() bool { return false }
 
 // Init implements cmd.Command.Init.
@@ -85,11 +85,11 @@ func (c *updateAllocationCommand) modelUUID() (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	envInfo, err := store.ReadInfo(c.EnvName())
+	modelInfo, err := store.ReadInfo(c.ModelName())
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	return envInfo.APIEndpoint().EnvironUUID, nil
+	return modelInfo.APIEndpoint().ModelUUID, nil
 }
 
 // Run implements cmd.Command.Run and contains most of the setbudget logic.

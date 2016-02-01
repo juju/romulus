@@ -12,7 +12,7 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/api/service"
-	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/names"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/macaroon.v1"
@@ -37,13 +37,13 @@ var newAuthorizationClient = func(options ...api.ClientOption) (authorizationCli
 // NewSetPlanCommand returns a new command that is used to set metric credentials for a
 // deployed service.
 func NewSetPlanCommand() cmd.Command {
-	return envcmd.Wrap(&setPlanCommand{})
+	return modelcmd.Wrap(&setPlanCommand{})
 }
 
 // setPlanCommand is a command-line tool for setting
 // Service.MetricCredential for development & demonstration purposes.
 type setPlanCommand struct {
-	envcmd.EnvCommandBase
+	modelcmd.ModelCommandBase
 	rcmd.HttpCommand
 
 	Service string
@@ -74,7 +74,7 @@ Example:
 
 // SetFlags implements cmd.Command.
 func (c *setPlanCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.EnvCommandBase.SetFlags(f)
+	c.ModelCommandBase.SetFlags(f)
 }
 
 // Init implements cmd.Command.
@@ -91,15 +91,15 @@ func (c *setPlanCommand) Init(args []string) error {
 	c.Plan = args[1]
 	c.Service = serviceName
 
-	return c.EnvCommandBase.Init(args[2:])
+	return c.ModelCommandBase.Init(args[2:])
 }
 
 // IsSuperCommand implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and EnvCommandBase.
+// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
 func (c *setPlanCommand) IsSuperCommand() bool { return false }
 
 // AllowInterspersed implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and EnvCommandBase.
+// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
 func (c *setPlanCommand) AllowInterspersedFlags() bool { return true }
 
 func (c *setPlanCommand) requestMetricCredentials() ([]byte, error) {
@@ -108,7 +108,7 @@ func (c *setPlanCommand) requestMetricCredentials() ([]byte, error) {
 		return nil, errors.Trace(err)
 	}
 	jclient := service.NewClient(root)
-	envUUID := jclient.EnvironmentUUID()
+	envUUID := jclient.ModelUUID()
 	charmURL, err := jclient.ServiceGetCharmURL(c.Service)
 	if err != nil {
 		return nil, errors.Trace(err)

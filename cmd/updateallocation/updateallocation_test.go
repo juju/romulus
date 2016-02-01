@@ -27,9 +27,9 @@ func (s *updateAllocationSuite) SetUpTest(c *gc.C) {
 	c.Log(coretesting.SingleEnvConfig)
 	store, err := configstore.Default()
 	c.Assert(err, jc.ErrorIsNil)
-	info := store.CreateInfo(coretesting.SampleEnvName)
+	info := store.CreateInfo(coretesting.SampleModelName)
 	apiEndpoint := configstore.APIEndpoint{
-		EnvironUUID: "env-uuid",
+		ModelUUID: "env-uuid",
 	}
 	info.SetAPIEndpoint(apiEndpoint)
 	err = info.Write()

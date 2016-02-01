@@ -72,7 +72,7 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 		apiCalls: []testing.StubCall{{
 			FuncName: "Authorize",
 			Args: []interface{}{
-				s.State.EnvironUUID(),
+				s.State.ModelUUID(),
 				s.charmURL,
 				"mysql",
 			},
