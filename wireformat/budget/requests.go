@@ -5,6 +5,7 @@ package budget
 
 import (
 	"fmt"
+	"net/http"
 )
 
 var baseURL = "https://api.jujucharms.com/omnibus/v2"
@@ -133,4 +134,23 @@ type HttpError struct {
 
 func (e HttpError) Error() string {
 	return fmt.Sprintf("%d: %s", e.StatusCode, e.Message)
+}
+
+// NotAvailError indicates that the service is either unreachable or unavailable.
+type NotAvailError struct {
+	resp int
+}
+
+func (e NotAvailError) Error() string {
+	if e.resp == http.StatusServiceUnavailable {
+		return "service unavailable"
+	} else {
+		return "service unreachable"
+	}
+}
+
+// IsNotAvail indicates whether the error is a NotAvailError.
+func IsNotAvail(err error) bool {
+	_, ok := err.(NotAvailError)
+	return ok
 }

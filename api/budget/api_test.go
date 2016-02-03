@@ -96,6 +96,47 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 			}}})
 }
 
+func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
+	httpClient := &mockClient{
+		RespCode: http.StatusServiceUnavailable,
+	}
+	client := budget.NewClient(httpClient)
+	response, err := client.CreateBudget("personal", "200")
+	c.Assert(wireformat.IsNotAvail(err), jc.IsTrue)
+	c.Assert(response, gc.Equals, "")
+	httpClient.CheckCalls(c,
+		[]jujutesting.StubCall{{
+			"DoWithBody",
+			[]interface{}{"POST",
+				"https://api.jujucharms.com/omnibus/v2/budget",
+				map[string]interface{}{
+					"limit":  "200",
+					"budget": "personal",
+				},
+			}}})
+}
+
+func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
+	httpClient := &mockClient{
+		RespCode: http.StatusOK,
+	}
+	httpClient.SetErrors(errors.New("Connection refused"))
+	client := budget.NewClient(httpClient)
+	response, err := client.CreateBudget("personal", "200")
+	c.Assert(wireformat.IsNotAvail(err), jc.IsTrue)
+	c.Assert(response, gc.Equals, "")
+	httpClient.CheckCalls(c,
+		[]jujutesting.StubCall{{
+			"DoWithBody",
+			[]interface{}{"POST",
+				"https://api.jujucharms.com/omnibus/v2/budget",
+				map[string]interface{}{
+					"limit":  "200",
+					"budget": "personal",
+				},
+			}}})
+}
+
 func (t *TSuite) TestListBudgets(c *gc.C) {
 	expected := &wireformat.ListBudgetsResponse{
 		Budgets: wireformat.BudgetSummaries{

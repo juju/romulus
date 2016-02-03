@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/juju/errors"
 
@@ -173,6 +174,9 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		}
 		resp, err = c.h.DoWithBody(req, bytes.NewReader(payload.Bytes()))
 		if err != nil {
+			if strings.HasSuffix(err.Error(), "Connection refused") {
+				return wireformat.NotAvailError{}
+			}
 			return errors.Annotate(err, "failed to execute request")
 		}
 		defer discardClose(resp)
@@ -187,7 +191,9 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		}
 		defer discardClose(resp)
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return wireformat.NotAvailError{}
+	} else if resp.StatusCode != http.StatusOK {
 		response := "http request failed"
 		json.NewDecoder(resp.Body).Decode(&response)
 		return wireformat.HttpError{
