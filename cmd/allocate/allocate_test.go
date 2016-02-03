@@ -27,9 +27,9 @@ func (s *allocateSuite) SetUpTest(c *gc.C) {
 	s.FakeJujuHomeSuite.SetUpTest(c)
 	store, err := configstore.Default()
 	c.Assert(err, jc.ErrorIsNil)
-	info := store.CreateInfo(coretesting.SampleEnvName)
+	info := store.CreateInfo(coretesting.SampleModelName)
 	apiEndpoint := configstore.APIEndpoint{
-		EnvironUUID: "env-uuid",
+		ModelUUID: "env-uuid",
 	}
 	info.SetAPIEndpoint(apiEndpoint)
 	err = info.Write()

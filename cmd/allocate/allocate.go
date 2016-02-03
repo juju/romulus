@@ -10,7 +10,7 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/juju/environs/configstore"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
@@ -22,7 +22,7 @@ import (
 var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[1-9][0-9]*$`)
 
 type allocateCommand struct {
-	envcmd.EnvCommandBase
+	modelcmd.ModelCommandBase
 	rcmd.HttpCommand
 	Budget   string
 	Model    string
@@ -32,7 +32,7 @@ type allocateCommand struct {
 
 // NewAllocateCommand returns a new allocateCommand
 func NewAllocateCommand() cmd.Command {
-	return envcmd.Wrap(&allocateCommand{})
+	return modelcmd.Wrap(&allocateCommand{})
 }
 
 const doc = `
@@ -60,7 +60,7 @@ func (c *allocateCommand) Info() *cmd.Info {
 
 // SetFlags implements cmd.Command.
 func (c *allocateCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.EnvCommandBase.SetFlags(f)
+	c.ModelCommandBase.SetFlags(f)
 }
 
 // AllowInterspersedFlags implements cmd.Command.
@@ -113,11 +113,11 @@ func (c *allocateCommand) modelUUID() (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	envInfo, err := store.ReadInfo(c.EnvName())
+	envInfo, err := store.ReadInfo(c.ModelName())
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	return envInfo.APIEndpoint().EnvironUUID, nil
+	return envInfo.APIEndpoint().ModelUUID, nil
 }
 
 func parseBudgetWithLimit(bl string) (string, string, error) {
