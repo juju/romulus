@@ -138,11 +138,11 @@ func (e HttpError) Error() string {
 
 // NotAvailError indicates that the service is either unreachable or unavailable.
 type NotAvailError struct {
-	resp int
+	Resp int
 }
 
 func (e NotAvailError) Error() string {
-	if e.resp == http.StatusServiceUnavailable {
+	if e.Resp == http.StatusServiceUnavailable {
 		return "service unavailable"
 	} else {
 		return "service unreachable"
