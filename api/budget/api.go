@@ -192,7 +192,7 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		defer discardClose(resp)
 	}
 	if resp.StatusCode == http.StatusServiceUnavailable {
-		return wireformat.NotAvailError{}
+		return wireformat.NotAvailError{Resp: resp.StatusCode}
 	} else if resp.StatusCode != http.StatusOK {
 		response := "http request failed"
 		json.NewDecoder(resp.Body).Decode(&response)
