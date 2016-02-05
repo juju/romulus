@@ -109,7 +109,7 @@ func (c *setPlanCommand) requestMetricCredentials() ([]byte, error) {
 	}
 	jclient := service.NewClient(root)
 	envUUID := jclient.ModelUUID()
-	charmURL, err := jclient.ServiceGetCharmURL(c.Service)
+	charmURL, err := jclient.GetCharmURL(c.Service)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
