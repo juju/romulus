@@ -48,7 +48,8 @@ type httpClient interface {
 
 // client is the implementation of the Client interface.
 type client struct {
-	client httpClient
+	client  httpClient
+	baseURL string
 }
 
 // ClientOption defines a function which configures a Client.
@@ -63,6 +64,14 @@ func HTTPClient(c httpClient) func(h *client) error {
 	}
 }
 
+// BaseURL sets the base url for the api client.
+func BaseURL(url string) func(h *client) error {
+	return func(h *client) error {
+		h.baseURL = url
+		return nil
+	}
+}
+
 // NewAuthorizationClient returns a new public authorization client.
 func NewAuthorizationClient(options ...ClientOption) (AuthorizationClient, error) {
 	return NewClient(options...)
@@ -71,7 +80,8 @@ func NewAuthorizationClient(options ...ClientOption) (AuthorizationClient, error
 // NewClient returns a new client for plan management.
 func NewClient(options ...ClientOption) (*client, error) {
 	c := &client{
-		client: httpbakery.NewClient(),
+		client:  httpbakery.NewClient(),
+		baseURL: baseURL,
 	}
 
 	for _, option := range options {
@@ -86,7 +96,7 @@ func NewClient(options ...ClientOption) (*client, error) {
 
 // GetAssociatedPlans returns the default plan for the specified charm.
 func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) {
-	u, err := url.Parse(baseURL + "/charm")
+	u, err := url.Parse(c.baseURL + "/charm")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -122,7 +132,7 @@ func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) 
 
 // Authorize implements the AuthorizationClient.Authorize method.
 func (c *client) Authorize(environmentUUID, charmURL, serviceName, planURL string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error) {
-	u, err := url.Parse(baseURL + "/plan/authorize")
+	u, err := url.Parse(c.baseURL + "/plan/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
