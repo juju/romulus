@@ -86,7 +86,7 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 		about:   "unknown service",
 		plan:    "bob/default",
 		service: "wordpress",
-		err:     "service \"wordpress\" not found",
+		err:     "service \"wordpress\" not found.*",
 	}, {
 		about:   "unknown service",
 		plan:    "bob/default",
