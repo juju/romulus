@@ -18,13 +18,13 @@ import (
 var _ = gc.Suite(&updateAllocationSuite{})
 
 type updateAllocationSuite struct {
-	coretesting.FakeJujuHomeSuite
+	coretesting.FakeJujuXDGDataHomeSuite
 	stub    *testing.Stub
 	mockAPI *mockapi
 }
 
 func (s *updateAllocationSuite) SetUpTest(c *gc.C) {
-	s.FakeJujuHomeSuite.SetUpTest(c)
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	c.Log(coretesting.SingleEnvConfig)
 	store, err := configstore.Default()
 	c.Assert(err, jc.ErrorIsNil)
