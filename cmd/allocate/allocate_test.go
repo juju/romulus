@@ -42,7 +42,7 @@ func (s *allocateSuite) SetUpTest(c *gc.C) {
 func (s *allocateSuite) TestAllocate(c *gc.C) {
 	s.mockAPI.resp = "allocation updated"
 	alloc := allocate.NewAllocateCommand()
-	ctx, err := cmdtesting.RunCommand(c, alloc, "name:100", "db")
+	ctx, err := cmdtesting.RunCommand(c, alloc, "name:100", "db", "--model", coretesting.SampleModelName)
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "allocation updated")
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "100", "env-uuid", []string{"db"})
@@ -51,7 +51,7 @@ func (s *allocateSuite) TestAllocate(c *gc.C) {
 func (s *allocateSuite) TestallocateAPIError(c *gc.C) {
 	s.stub.SetErrors(errors.New("something failed"))
 	set := allocate.NewAllocateCommand()
-	_, err := cmdtesting.RunCommand(c, set, "name:100", "db")
+	_, err := cmdtesting.RunCommand(c, set, "name:100", "db", "--model", coretesting.SampleModelName)
 	c.Assert(err, gc.ErrorMatches, "failed to create allocation: something failed")
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "100", "env-uuid", []string{"db"})
 }
