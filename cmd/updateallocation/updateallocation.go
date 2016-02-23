@@ -11,7 +11,6 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
-	"github.com/juju/juju/environs/configstore"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
 
@@ -21,6 +20,7 @@ import (
 
 type updateAllocationCommand struct {
 	modelcmd.ModelCommandBase
+	api apiClient
 	rcmd.HttpCommand
 	Name  string
 	Value string
@@ -31,9 +31,12 @@ func NewUpdateAllocationCommand() cmd.Command {
 	return modelcmd.Wrap(&updateAllocationCommand{})
 }
 
-var newAPIClient = func(c *httpbakery.Client) (apiClient, error) {
-	client := api.NewClient(c)
-	return client, nil
+func (c *updateAllocationCommand) newAPIClient(bakery *httpbakery.Client) (apiClient, error) {
+	if c.api != nil {
+		return c.api, nil
+	}
+	c.api = api.NewClient(bakery)
+	return c.api, nil
 }
 
 type apiClient interface {
@@ -82,15 +85,11 @@ func (c *updateAllocationCommand) Init(args []string) error {
 }
 
 func (c *updateAllocationCommand) modelUUID() (string, error) {
-	store, err := configstore.Default()
+	model, err := c.ClientStore().ModelByName(c.ControllerName(), c.ModelName())
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	modelInfo, err := store.ReadInfo(c.ModelName())
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	return modelInfo.APIEndpoint().ModelUUID, nil
+	return model.ModelUUID, nil
 }
 
 // Run implements cmd.Command.Run and contains most of the setbudget logic.
@@ -104,7 +103,7 @@ func (c *updateAllocationCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}
-	api, err := newAPIClient(client)
+	api, err := c.newAPIClient(client)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an api client")
 	}
@@ -112,6 +111,6 @@ func (c *updateAllocationCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to update the allocation")
 	}
-	fmt.Fprintf(ctx.Stdout, resp)
+	fmt.Fprint(ctx.Stdout, resp)
 	return nil
 }

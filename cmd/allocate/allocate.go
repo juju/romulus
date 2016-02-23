@@ -11,7 +11,6 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
-	"github.com/juju/juju/environs/configstore"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
 
@@ -24,6 +23,7 @@ var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[1-9][0-9]*$`)
 type allocateCommand struct {
 	modelcmd.ModelCommandBase
 	rcmd.HttpCommand
+	api      apiClient
 	Budget   string
 	Model    string
 	Services []string
@@ -96,7 +96,7 @@ func (c *allocateCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}
-	api, err := newAPIClient(client)
+	api, err := c.newAPIClient(client)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an api client")
 	}
@@ -109,15 +109,11 @@ func (c *allocateCommand) Run(ctx *cmd.Context) error {
 }
 
 func (c *allocateCommand) modelUUID() (string, error) {
-	store, err := configstore.Default()
+	model, err := c.ClientStore().ModelByName(c.ControllerName(), c.ModelName())
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	envInfo, err := store.ReadInfo(c.ModelName())
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	return envInfo.APIEndpoint().ModelUUID, nil
+	return model.ModelUUID, nil
 }
 
 func parseBudgetWithLimit(bl string) (string, string, error) {
@@ -128,11 +124,12 @@ func parseBudgetWithLimit(bl string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
-var newAPIClient = newAPIClientImpl
-
-func newAPIClientImpl(c *httpbakery.Client) (apiClient, error) {
-	client := api.NewClient(c)
-	return client, nil
+func (c *allocateCommand) newAPIClient(bakery *httpbakery.Client) (apiClient, error) {
+	if c.api != nil {
+		return c.api, nil
+	}
+	c.api = api.NewClient(bakery)
+	return c.api, nil
 }
 
 type apiClient interface {
