@@ -4,15 +4,13 @@
 package allocate
 
 import (
-	"gopkg.in/macaroon-bakery.v1/httpbakery"
+	"github.com/juju/cmd"
+	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/juju/jujuclient"
 )
 
-var (
-	NewAPIClient = &newAPIClient
-)
-
-func APIClientFnc(api apiClient) func(*httpbakery.Client) (apiClient, error) {
-	return func(*httpbakery.Client) (apiClient, error) {
-		return api, nil
-	}
+func NewAllocateCommandForTest(api apiClient, store jujuclient.ClientStore) cmd.Command {
+	c := &allocateCommand{api: api}
+	c.SetClientStore(store)
+	return modelcmd.Wrap(c)
 }

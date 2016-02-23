@@ -4,16 +4,13 @@
 package updateallocation
 
 import (
-	"gopkg.in/macaroon-bakery.v1/httpbakery"
+	"github.com/juju/cmd"
+	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/juju/jujuclient"
 )
 
-var (
-	NewAPIClient = &newAPIClient
-)
-
-// APIClientFnc allow patching of the apiClient
-func APIClientFnc(api apiClient) func(*httpbakery.Client) (apiClient, error) {
-	return func(_ *httpbakery.Client) (apiClient, error) {
-		return api, nil
-	}
+func NewUpdateAllocateCommandForTest(api apiClient, store jujuclient.ClientStore) cmd.Command {
+	c := &updateAllocationCommand{api: api}
+	c.SetClientStore(store)
+	return modelcmd.Wrap(c)
 }
