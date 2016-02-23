@@ -25,7 +25,6 @@ type updateAllocationSuite struct {
 
 func (s *updateAllocationSuite) SetUpTest(c *gc.C) {
 	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
-	c.Log(coretesting.SingleEnvConfig)
 	store, err := configstore.Default()
 	c.Assert(err, jc.ErrorIsNil)
 	info := store.CreateInfo(coretesting.SampleModelName)
@@ -43,7 +42,7 @@ func (s *updateAllocationSuite) SetUpTest(c *gc.C) {
 func (s *updateAllocationSuite) TestUpdateAllocation(c *gc.C) {
 	s.mockAPI.resp = "name budget set to 5"
 	set := updateallocation.NewUpdateAllocationCommand()
-	ctx, err := cmdtesting.RunCommand(c, set, "name", "5")
+	ctx, err := cmdtesting.RunCommand(c, set, "name", "5", "--model", coretesting.SampleModelName)
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "name budget set to 5")
 	s.mockAPI.CheckCall(c, 0, "UpdateAllocation", "env-uuid", "name", "5")
@@ -52,7 +51,7 @@ func (s *updateAllocationSuite) TestUpdateAllocation(c *gc.C) {
 func (s *updateAllocationSuite) TestUpdateAllocationAPIError(c *gc.C) {
 	s.stub.SetErrors(errors.New("something failed"))
 	set := updateallocation.NewUpdateAllocationCommand()
-	_, err := cmdtesting.RunCommand(c, set, "name", "5")
+	_, err := cmdtesting.RunCommand(c, set, "name", "5", "--model", coretesting.SampleModelName)
 	c.Assert(err, gc.ErrorMatches, "failed to update the allocation: something failed")
 	s.mockAPI.CheckCall(c, 0, "UpdateAllocation", "env-uuid", "name", "5")
 }
