@@ -29,10 +29,28 @@ type allocateSuite struct {
 func (s *allocateSuite) SetUpTest(c *gc.C) {
 	s.FakeHomeSuite.SetUpTest(c)
 	s.store = &jujuclienttesting.MemStore{
-		Models: map[string]*jujuclient.ControllerModels{
-			"controller": {Models: map[string]jujuclient.ModelDetails{
-				"model": jujuclient.ModelDetails{"model-uuid"},
-			}},
+		Controllers: map[string]jujuclient.ControllerDetails{
+			"controller": {},
+		},
+		Models: map[string]jujuclient.ControllerAccountModels{
+			"controller": {
+				AccountModels: map[string]*jujuclient.AccountModels{
+					"admin@local": {
+						Models: map[string]jujuclient.ModelDetails{
+							"model": {"model-uuid"},
+						},
+						CurrentModel: "model",
+					},
+				},
+			},
+		},
+		Accounts: map[string]*jujuclient.ControllerAccounts{
+			"controller": {
+				Accounts: map[string]jujuclient.AccountDetails{
+					"admin@local": {},
+				},
+				CurrentAccount: "admin@local",
+			},
 		},
 	}
 	s.stub = &testing.Stub{}
