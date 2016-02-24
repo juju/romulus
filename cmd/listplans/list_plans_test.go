@@ -20,8 +20,10 @@ import (
 var (
 	testPlan1 = `
     description:
-        text: >-
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc pretium purus nec magna faucibus, sed eleifend dui fermentum. Nulla nec ornare lorem, sed imperdiet turpis. Nam auctor quis massa et commodo. Maecenas in magna erat. Duis non iaculis risus, a malesuada quam. Sed quis commodo sapien. Suspendisse laoreet diam eu interdum tristique. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+        text: |
+            Lorem ipsum dolor sit amet,
+            consectetur adipiscing elit.
+            Nunc pretium purus nec magna faucibus, sed eleifend dui fermentum. Nulla nec ornare lorem, sed imperdiet turpis. Nam auctor quis massa et commodo. Maecenas in magna erat. Duis non iaculis risus, a malesuada quam. Sed quis commodo sapien. Suspendisse laoreet diam eu interdum tristique. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
             Donec eu nunc quis eros fermentum porta non ut justo. Donec ut tempus sapien. Suspendisse bibendum fermentum eros, id feugiat justo elementum quis. Quisque vel volutpat risus. Aenean pellentesque ultrices consequat. Maecenas luctus, augue vitae ullamcorper vulputate, purus ligula accumsan diam, ut efficitur diam tellus ac nibh. Cras eros ligula, mattis in ex quis, porta efficitur quam. Donec porta, est ut interdum blandit, enim est elementum sapien, quis congue orci dui et nulla. Maecenas vehicula malesuada vehicula. Phasellus sapien ante, semper eu ornare sed, vulputate id nunc. Maecenas in orci mollis, sagittis lorem quis, ultrices metus. Integer molestie tempor augue, pulvinar blandit sapien ultricies eget.
             Fusce sed tellus sit amet tortor mollis pellentesque. Nulla tempus sem tellus, vitae tempor ipsum scelerisque eu. Cras tempor, tellus nec pretium egestas, felis massa luctus velit, vitae feugiat nunc velit ac tellus. Maecenas quis nisi diam. Sed pulvinar suscipit nibh sit amet cursus. Ut sem orci, consequat id pretium id, lacinia id nisl. Maecenas id quam at nisi eleifend porta. Vestibulum at ligula arcu. Quisque tincidunt pulvinar egestas. Ut suscipit ornare ligula a fermentum. Morbi ante justo, condimentum ut risus vitae, molestie elementum elit. Curabitur malesuada commodo diam sed ultrices. Vestibulum tincidunt turpis at ultricies fermentum. Morbi ipsum felis, laoreet quis risus id, ornare elementum urna. Morbi ultrices porttitor pulvinar. Maecenas facilisis velit sit amet tellus feugiat iaculis.
     metrics:
@@ -55,6 +57,67 @@ func (s *ListPlansCommandSuite) SetUpTest(c *gc.C) {
 	s.PatchValue(listplans.NewClient, listplans.APIClientFnc(s.mockAPI))
 }
 
+func (s *ListPlansCommandSuite) TestTabularOutput(c *gc.C) {
+	listPlans := &listplans.ListPlansCommand{
+		CharmResolver: &mockCharmResolver{
+			ResolvedURL: "series/some-charm-url",
+			Stub:        s.stub,
+		},
+	}
+	defer listPlans.Close()
+	ctx, err := cmdtesting.RunCommand(c, listPlans, "some-charm-url")
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(cmdtesting.Stdout(ctx), gc.Equals,
+		`PLAN             	PRICE	DESCRIPTION                                       
+bob/test-plan-1  	     	Lorem ipsum dolor sit amet,                       
+                 	     	consectetur adipiscing elit.                      
+                 	     	Nunc pretium purus nec magna faucibus, sed        
+                 	     	eleifend dui fermentum. Nulla nec ornare lorem,   
+                 	     	sed imperdiet turpis. Nam auctor quis massa et    
+                 	     	commodo. Maecenas in magna erat. Duis non iaculis 
+                 	     	risus, a malesuada quam. Sed quis commodo sapien. 
+                 	     	Suspendisse laoreet diam eu interdum tristique.   
+                 	     	Class aptent taciti sociosqu ad litora torquent   
+                 	     	per conubia nostra, per inceptos himenaeos.       
+                 	     	Donec eu nunc quis eros fermentum porta non ut    
+                 	     	justo. Donec ut tempus sapien. Suspendisse        
+                 	     	bibendum fermentum eros, id feugiat justo         
+                 	     	elementum quis. Quisque vel volutpat risus. Aenean
+                 	     	pellentesque ultrices consequat. Maecenas luctus, 
+                 	     	augue vitae ullamcorper vulputate, purus ligula   
+                 	     	accumsan diam, ut efficitur diam tellus ac nibh.  
+                 	     	Cras eros ligula, mattis in ex quis, porta        
+                 	     	efficitur quam. Donec porta, est ut interdum      
+                 	     	blandit, enim est elementum sapien, quis congue   
+                 	     	orci dui et nulla. Maecenas vehicula malesuada    
+                 	     	vehicula. Phasellus sapien ante, semper eu ornare 
+                 	     	sed, vulputate id nunc. Maecenas in orci mollis,  
+                 	     	sagittis lorem quis, ultrices metus. Integer      
+                 	     	molestie tempor augue, pulvinar blandit sapien    
+                 	     	ultricies eget.                                   
+                 	     	Fusce sed tellus sit amet tortor mollis           
+                 	     	pellentesque. Nulla tempus sem tellus, vitae      
+                 	     	tempor ipsum scelerisque eu. Cras tempor, tellus  
+                 	     	nec pretium egestas, felis massa luctus velit,    
+                 	     	vitae feugiat nunc velit ac tellus. Maecenas quis 
+                 	     	nisi diam. Sed pulvinar suscipit nibh sit amet    
+                 	     	cursus. Ut sem orci, consequat id pretium id,     
+                 	     	lacinia id nisl. Maecenas id quam at nisi eleifend
+                 	     	porta. Vestibulum at ligula arcu. Quisque         
+                 	     	tincidunt pulvinar egestas. Ut suscipit ornare    
+                 	     	ligula a fermentum. Morbi ante justo, condimentum 
+                 	     	ut risus vitae, molestie elementum elit. Curabitur
+                 	     	malesuada commodo diam sed ultrices. Vestibulum   
+                 	     	tincidunt turpis at ultricies fermentum. Morbi    
+                 	     	ipsum felis, laoreet quis risus id, ornare        
+                 	     	elementum urna. Morbi ultrices porttitor pulvinar.
+                 	     	Maecenas facilisis velit sit amet tellus feugiat  
+                 	     	iaculis.                                          
+                 	     	                                                  
+carol/test-plan-2	     	                                                  
+`)
+}
+
 func (s *ListPlansCommandSuite) TestGetCommands(c *gc.C) {
 	tests := []struct {
 		about            string
@@ -68,7 +131,7 @@ func (s *ListPlansCommandSuite) TestGetCommands(c *gc.C) {
 		resolvedCharmURL: "series/some-charm-url-1",
 		apiCall:          []interface{}{"series/some-charm-url-1"},
 	}, {
-		about:   "everything works - default yaml format",
+		about:   "everything works - default format",
 		args:    []string{"some-charm-url"},
 		apiCall: []interface{}{"some-charm-url"},
 	}, {

@@ -85,7 +85,7 @@ func (c *ListPlansCommand) Init(args []string) error {
 // SetFlags implements Command.SetFlags.
 func (c *ListPlansCommand) SetFlags(f *gnuflag.FlagSet) {
 	c.HttpCommand.SetFlags(f)
-	defaultFormat := "yaml"
+	defaultFormat := "tabular"
 	c.out.AddFlags(f, defaultFormat, map[string]cmd.Formatter{
 		"yaml":    cmd.FormatYaml,
 		"json":    cmd.FormatJson,
