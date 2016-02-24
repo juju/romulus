@@ -12,7 +12,7 @@ github.com/juju/gojsonreference	git	f0d24ac5ee330baa21721cdff56d45e4ee42628e	201
 github.com/juju/gojsonschema	git	e1ad140384f254c82f89450d9a7c8dd38a632838	2015-03-12T17:00:16Z
 github.com/juju/httpprof	git	14bf14c307672fd2456bdbf35d19cf0ccd3cf565	2014-12-17T16:00:36Z
 github.com/juju/httprequest	git	1015665b66c26101695f2f51407b3b1e000176fd	2015-10-07T14:02:54Z
-github.com/juju/juju	git	92294a02c4e466f7f515845e21727afb09a59c1a	2016-02-23T21:00:59Z
+github.com/juju/juju	git	9522d3b7996a35797790559153830951476c8261	2016-02-24T07:01:01Z
 github.com/juju/loggo	git	8477fc936adf0e382d680310047ca27e128a309a	2015-05-27T03:58:39Z
 github.com/juju/names	git	0fa6e46604f432b3064b02b2160fc5e6056131b8	2016-01-22T05:59:08Z
 github.com/juju/persistent-cookiejar	git	fa866b33e350f6357a566d1b4f1c09c5493cfbdb	2016-02-22T17:00:27Z
