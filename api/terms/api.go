@@ -30,6 +30,7 @@ type CheckAgreementsRequest struct {
 // GetTermsResponse holds the response of the GetTerms call.
 type GetTermsResponse struct {
 	Name      string    `json:"name"`
+	Title     string    `json:"title"`
 	Revision  int       `json:"revision"`
 	CreatedOn time.Time `json:"created-on"`
 	Content   string    `json:"content"`
