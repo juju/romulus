@@ -105,7 +105,7 @@ func (c *agreeCommand) Init(args []string) error {
 
 // Run implements Command.Run.
 func (c *agreeCommand) Run(ctx *cmd.Context) error {
-	client, err := c.NewClient()
+	client, err := c.NewClient(ctx)
 	if err != nil {
 		return errors.Trace(err)
 	}

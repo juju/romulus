@@ -6,19 +6,23 @@ package cmd
 import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/idmclient/ussologin"
+	"github.com/juju/juju/jujuclient"
 	"github.com/juju/persistent-cookiejar"
+	"gopkg.in/juju/environschema.v1/form"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 )
 
-// HttpCommand can instantiate http bakery clients using a commong cookie jar.
+// TODO (mattyw) Http needs to be HTTP
+// HttpCommand can instantiate http bakery clients using a common cookie jar.
 type HttpCommand struct {
 	cmd.CommandBase
 
 	cookiejar *cookiejar.Jar
 }
 
-// NewClient returns a new http bakery client for commands.
-func (s *HttpCommand) NewClient() (*httpbakery.Client, error) {
+// NewClient returns a new HTTP bakery client for commands.
+func (s *HttpCommand) NewClient(ctx *cmd.Context) (*httpbakery.Client, error) {
 	if s.cookiejar == nil {
 		cookieFile := cookiejar.DefaultCookieFile()
 		jar, err := cookiejar.New(&cookiejar.Options{
@@ -31,7 +35,7 @@ func (s *HttpCommand) NewClient() (*httpbakery.Client, error) {
 	}
 	client := httpbakery.NewClient()
 	client.Jar = s.cookiejar
-	client.VisitWebPage = httpbakery.OpenWebBrowser
+	client.VisitWebPage = ussologin.VisitWebPage(newIOFiller(ctx), client.Client, jujuclient.NewTokenStore())
 	return client, nil
 }
 
@@ -41,4 +45,11 @@ func (s *HttpCommand) Close() error {
 		return s.cookiejar.Save()
 	}
 	return nil
+}
+
+func newIOFiller(ctx *cmd.Context) *form.IOFiller {
+	return &form.IOFiller{
+		In:  ctx.Stdin,
+		Out: ctx.Stderr,
+	}
 }

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/juju/cmd/cmdtesting"
+	coretesting "github.com/juju/juju/testing"
 	jujutesting "github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -26,9 +27,11 @@ var testTerms = "Test Terms"
 
 type agreeSuite struct {
 	client *mockClient
+	coretesting.FakeJujuXDGDataHomeSuite
 }
 
 func (s *agreeSuite) SetUpTest(c *gc.C) {
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.client = &mockClient{}
 
 	jujutesting.PatchValue(agree.ClientNew, func(...terms.ClientOption) (terms.Client, error) {
