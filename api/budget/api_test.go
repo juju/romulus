@@ -44,6 +44,7 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{
 					"limit":  "200",
@@ -67,6 +68,7 @@ func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{
 					"limit":  "200",
@@ -88,6 +90,7 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{
 					"limit":  "200",
@@ -108,6 +111,7 @@ func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{
 					"limit":  "200",
@@ -129,6 +133,7 @@ func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{
 					"limit":  "200",
@@ -191,6 +196,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{},
 			}}})
@@ -211,6 +217,7 @@ func (t *TSuite) TestListBudgetsServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{},
 			}}})
@@ -229,6 +236,7 @@ func (t *TSuite) TestListBudgetsRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget",
 				map[string]interface{}{},
 			}}})
@@ -249,10 +257,13 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -271,10 +282,13 @@ func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -291,10 +305,13 @@ func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -351,6 +368,7 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{},
 			}}})
@@ -371,6 +389,7 @@ func (t *TSuite) TestGetBudgetServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{},
 			}}})
@@ -389,6 +408,7 @@ func (t *TSuite) TestGetBudgetRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{},
 			}}})
@@ -410,6 +430,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
 					"limit":    "200",
@@ -434,6 +455,7 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
 					"limit":    "200",
@@ -456,6 +478,7 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
+				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
 					"limit":    "200",
@@ -480,10 +503,13 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -502,10 +528,13 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -522,10 +551,13 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
-			[]interface{}{"PUT",
+			[]interface{}{"PATCH",
+				"application/json+patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
-					"limit": "200",
+					"update": map[string]interface{}{
+						"limit": "200",
+					},
 				},
 			}}})
 }
@@ -546,6 +578,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
@@ -566,6 +599,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
@@ -584,6 +618,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
+				"",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
@@ -608,7 +643,7 @@ func (c *mockClient) DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Re
 			panic(err)
 		}
 	}
-	c.Stub.MethodCall(c, "DoWithBody", req.Method, req.URL.String(), requestData)
+	c.Stub.MethodCall(c, "DoWithBody", req.Method, req.Header.Get("Content-Type"), req.URL.String(), requestData)
 
 	resp := &http.Response{
 		StatusCode: c.RespCode,

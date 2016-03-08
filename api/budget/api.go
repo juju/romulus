@@ -138,6 +138,12 @@ type hasMethod interface {
 	Method() string
 }
 
+// hasContentType is an interface implemented by reqyests to
+// specify the content-type header to be set.
+type hasContentType interface {
+	ContentType() string
+}
+
 // doRequest executes a generic request, retrieving relevant information
 // from the req interface. If result is not nil, the response will be
 // decoded to it.
@@ -168,11 +174,14 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		if err != nil {
 			return errors.Annotate(err, "failed to encode request")
 		}
-		req, err := http.NewRequest(method, u.String(), nil)
+		r, err := http.NewRequest(method, u.String(), nil)
 		if err != nil {
 			return errors.Annotate(err, "failed to create request")
 		}
-		resp, err = c.h.DoWithBody(req, bytes.NewReader(payload.Bytes()))
+		if ctype, ok := req.(hasContentType); ok {
+			r.Header.Add("Content-Type", ctype.ContentType())
+		}
+		resp, err = c.h.DoWithBody(r, bytes.NewReader(payload.Bytes()))
 		if err != nil {
 			if strings.HasSuffix(err.Error(), "Connection refused") {
 				return wireformat.NotAvailError{}
@@ -181,11 +190,11 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		}
 		defer discardClose(resp)
 	} else {
-		req, err := http.NewRequest(method, u.String(), nil)
+		r, err := http.NewRequest(method, u.String(), nil)
 		if err != nil {
 			return errors.Annotate(err, "failed to create request")
 		}
-		resp, err = c.h.DoWithBody(req, nil)
+		resp, err = c.h.DoWithBody(r, nil)
 		if err != nil {
 			return errors.Annotate(err, "failed to execute request")
 		}
