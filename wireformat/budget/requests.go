@@ -102,7 +102,7 @@ type UpdateAllocationRequest struct {
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/environment/%s/service/%s/allocation", baseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/service/%s/allocation", baseURL, r.Model, r.Service)
 }
 
 // Method returns the method for the request.
@@ -120,7 +120,7 @@ type DeleteAllocationRequest struct {
 
 // URL returns the URL for the request.
 func (r DeleteAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/environment/%s/service/%s/allocation", baseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/service/%s/allocation", baseURL, r.Model, r.Service)
 }
 
 // Method returns the method for the request.

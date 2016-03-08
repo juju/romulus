@@ -474,14 +474,14 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "db", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PUT",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"limit": "200",
 				},
@@ -496,14 +496,14 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "db", "200")
 	c.Assert(err, gc.ErrorMatches, "400: cannot update allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PUT",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"limit": "200",
 				},
@@ -516,14 +516,14 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "db", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PUT",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"limit": "200",
 				},
@@ -539,14 +539,14 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model", "db")
+	response, err := client.DeleteAllocation("model-uuid", "db")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -559,14 +559,14 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model", "db")
+	response, err := client.DeleteAllocation("model-uuid", "db")
 	c.Assert(err, gc.ErrorMatches, "400: cannot delete allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -577,14 +577,14 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model", "db")
+	response, err := client.DeleteAllocation("model-uuid", "db")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
-				"https://api.jujucharms.com/omnibus/v2/environment/model/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{},
 			}}})
 }
