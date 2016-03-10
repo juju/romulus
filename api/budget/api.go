@@ -138,7 +138,7 @@ type hasMethod interface {
 	Method() string
 }
 
-// hasContentType is an interface implemented by reqyests to
+// hasContentType is an interface implemented by requests to
 // specify the content-type header to be set.
 type hasContentType interface {
 	ContentType() string
