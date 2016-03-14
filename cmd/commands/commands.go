@@ -10,6 +10,7 @@ import (
 	"github.com/juju/romulus/cmd/agree"
 	"github.com/juju/romulus/cmd/allocate"
 	"github.com/juju/romulus/cmd/createbudget"
+	"github.com/juju/romulus/cmd/listagreements"
 	"github.com/juju/romulus/cmd/listbudgets"
 	"github.com/juju/romulus/cmd/listplans"
 	"github.com/juju/romulus/cmd/setbudget"
@@ -34,4 +35,5 @@ func RegisterAll(r commandRegister) {
 	r.Register(setplan.NewSetPlanCommand())
 	r.Register(showbudget.NewShowBudgetCommand())
 	r.Register(updateallocation.NewUpdateAllocationCommand())
+	r.Register(listagreements.NewListAgreementsCommand())
 }
