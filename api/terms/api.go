@@ -70,6 +70,7 @@ type SaveAgreement struct {
 type Client interface {
 	GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse, error)
 	SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, error)
+	GetUsersAgreements() ([]AgreementResponse, error)
 }
 
 var _ Client = (*client)(nil)
@@ -131,9 +132,9 @@ func (c *client) GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse
 	if response.StatusCode != http.StatusOK {
 		b, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return nil, errors.Errorf("failed to get unsigned agreements: %v", response.Status)
+			return nil, errors.Errorf("failed to get unsigned terms: %v", response.Status)
 		}
-		return nil, errors.Errorf("failed to get unsigned agreements: %v: %s", response.Status, string(b))
+		return nil, errors.Errorf("failed to get unsigned terms: %v: %s", response.Status, string(b))
 	}
 	defer discardClose(response)
 	var results []GetTermsResponse
@@ -164,9 +165,9 @@ func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, erro
 	if response.StatusCode != http.StatusOK {
 		b, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return nil, errors.Errorf("failed to get unsigned agreements: %v", response.Status)
+			return nil, errors.Errorf("failed to save agreement: %v", response.Status)
 		}
-		return nil, errors.Errorf("failed to get unsigned agreements: %v: %s", response.Status, string(b))
+		return nil, errors.Errorf("failed to save agreement: %v: %s", response.Status, string(b))
 	}
 	defer discardClose(response)
 	var results SaveAgreementResponses
@@ -176,6 +177,35 @@ func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, erro
 		return nil, errors.Trace(err)
 	}
 	return &results, nil
+}
+
+// GetUsersAgreements returns all agreements the user has made.
+func (c *client) GetUsersAgreements() ([]AgreementResponse, error) {
+	u := fmt.Sprintf("%s/agreements", baseURL)
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	response, err := c.client.Do(req)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if response.StatusCode != http.StatusOK {
+		b, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, errors.Errorf("failed to get signed agreements: %v", response.Status)
+		}
+		return nil, errors.Errorf("failed to get signed agreements: %v: %s", response.Status, string(b))
+	}
+	defer discardClose(response)
+
+	var results []AgreementResponse
+	dec := json.NewDecoder(response.Body)
+	err = dec.Decode(&results)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	return results, nil
 }
 
 // discardClose reads any remaining data from the response body and closes it.

@@ -216,3 +216,8 @@ func (c *mockClient) GetUnsignedTerms(p *terms.CheckAgreementsRequest) ([]terms.
 	copy(r, c.unsignedTerms)
 	return r, nil
 }
+
+func (c *mockClient) GetUsersAgreements() ([]terms.AgreementResponse, error) {
+	c.MethodCall(c, "GetUsersAgreements")
+	return []terms.AgreementResponse{}, nil
+}
