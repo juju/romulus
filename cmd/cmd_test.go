@@ -9,6 +9,7 @@ import (
 
 	jujucmd "github.com/juju/cmd"
 	"github.com/juju/cmd/cmdtesting"
+	coretesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 
@@ -20,6 +21,7 @@ func TestPackage(t *stdtesting.T) {
 }
 
 type httpSuite struct {
+	coretesting.FakeJujuXDGDataHomeSuite
 	testing.CleanupSuite
 	caCert string
 }
@@ -38,14 +40,24 @@ func (c *testCommand) Run(ctx *jujucmd.Context) error {
 	return nil
 }
 
+func (s *httpSuite) SetUpTest(c *gc.C) {
+	s.CleanupSuite.SetUpTest(c)
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
+}
+
+func (s *httpSuite) TearDownTest(c *gc.C) {
+	s.FakeJujuXDGDataHomeSuite.TearDownTest(c)
+	s.CleanupSuite.TearDownTest(c)
+}
+
 func (s *httpSuite) TestNewClient(c *gc.C) {
 	basecmd := &testCommand{}
 	defer basecmd.Close()
 
-	_, err := cmdtesting.RunCommand(c, basecmd)
+	ctx, err := cmdtesting.RunCommand(c, basecmd)
 	c.Assert(err, jc.ErrorIsNil)
 
-	client, err := basecmd.NewClient()
+	client, err := basecmd.NewClient(ctx)
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(client, gc.NotNil)
 }

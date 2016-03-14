@@ -99,7 +99,7 @@ func (c *updateAllocationCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to get model uuid")
 	}
-	client, err := c.NewClient()
+	client, err := c.NewClient(ctx)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

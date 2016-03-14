@@ -100,12 +100,12 @@ func (c *ListPlansCommand) SetFlags(f *gnuflag.FlagSet) {
 // retrieved can be limited using the plan and isv flags.
 func (c *ListPlansCommand) Run(ctx *cmd.Context) (rErr error) {
 	defer c.Close()
-	client, err := c.NewClient()
+	client, err := c.NewClient(ctx)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}
 
-	resolvedUrl, err := c.CharmResolver.Resolve(client.Client, c.CharmURL)
+	resolvedUrl, err := c.CharmResolver.Resolve(client.VisitWebPage, client.Client, c.CharmURL)
 	if err != nil {
 		return errors.Annotatef(err, "failed to resolve charmURL %v", c.CharmURL)
 	}

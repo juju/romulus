@@ -5,9 +5,11 @@ package listplans_test
 
 import (
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/juju/cmd/cmdtesting"
+	coretesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -44,6 +46,7 @@ var (
 )
 
 type ListPlansCommandSuite struct {
+	coretesting.FakeJujuXDGDataHomeSuite
 	testing.CleanupSuite
 	mockAPI *mockapi
 	stub    *testing.Stub
@@ -52,6 +55,7 @@ type ListPlansCommandSuite struct {
 var _ = gc.Suite(&ListPlansCommandSuite{})
 
 func (s *ListPlansCommandSuite) SetUpTest(c *gc.C) {
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.stub = &testing.Stub{}
 	s.mockAPI = newMockAPI(s.stub)
 	s.PatchValue(listplans.NewClient, listplans.APIClientFnc(s.mockAPI))
@@ -227,7 +231,7 @@ type mockCharmResolver struct {
 }
 
 // Resolve implements cmd.CharmResolver.
-func (r *mockCharmResolver) Resolve(_ *http.Client, charmURL string) (string, error) {
+func (r *mockCharmResolver) Resolve(_ func(*url.URL) error, _ *http.Client, charmURL string) (string, error) {
 	r.AddCall("Resolve", charmURL)
 	if r.ResolvedURL != "" {
 		return r.ResolvedURL, r.NextErr()

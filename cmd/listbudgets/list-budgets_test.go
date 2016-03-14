@@ -6,6 +6,7 @@ package listbudgets_test
 import (
 	"github.com/juju/cmd/cmdtesting"
 	"github.com/juju/errors"
+	coretesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -17,12 +18,14 @@ import (
 var _ = gc.Suite(&listBudgetsSuite{})
 
 type listBudgetsSuite struct {
+	coretesting.FakeJujuXDGDataHomeSuite
 	testing.CleanupSuite
 	stub    *testing.Stub
 	mockAPI *mockapi
 }
 
 func (s *listBudgetsSuite) SetUpTest(c *gc.C) {
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.stub = &testing.Stub{}
 	s.mockAPI = &mockapi{Stub: s.stub}
 	s.PatchValue(listbudgets.NewAPIClient, listbudgets.APIClientFnc(s.mockAPI))

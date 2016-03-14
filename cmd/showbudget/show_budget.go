@@ -65,7 +65,7 @@ func (c *showBudgetCommand) SetFlags(f *gnuflag.FlagSet) {
 
 func (c *showBudgetCommand) Run(ctx *cmd.Context) error {
 	defer c.Close()
-	client, err := c.NewClient()
+	client, err := c.NewClient(ctx)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

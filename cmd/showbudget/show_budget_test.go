@@ -6,6 +6,7 @@ package showbudget_test
 import (
 	"github.com/juju/cmd/cmdtesting"
 	"github.com/juju/errors"
+	coretesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -17,12 +18,15 @@ import (
 var _ = gc.Suite(&showBudgetSuite{})
 
 type showBudgetSuite struct {
+	coretesting.FakeJujuXDGDataHomeSuite
 	testing.CleanupSuite
 	stub    *testing.Stub
 	mockAPI *mockapi
 }
 
 func (s *showBudgetSuite) SetUpTest(c *gc.C) {
+	s.CleanupSuite.SetUpTest(c)
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.stub = &testing.Stub{}
 	s.mockAPI = &mockapi{s.stub}
 	s.PatchValue(showbudget.NewAPIClient, showbudget.APIClientFnc(s.mockAPI))

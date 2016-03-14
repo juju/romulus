@@ -14,7 +14,6 @@ import (
 	"github.com/juju/juju/api/service"
 	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/names"
-	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/macaroon.v1"
 	"launchpad.net/gnuflag"
 
@@ -102,27 +101,22 @@ func (c *setPlanCommand) IsSuperCommand() bool { return false }
 // Defined here because of ambiguity between HttpCommand and ModelCommandBase.
 func (c *setPlanCommand) AllowInterspersedFlags() bool { return true }
 
-func (c *setPlanCommand) requestMetricCredentials() ([]byte, error) {
-	root, err := c.NewAPIRoot()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	jclient := service.NewClient(root)
-	envUUID := jclient.ModelUUID()
-	charmURL, err := jclient.GetCharmURL(c.Service)
+func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *cmd.Context) ([]byte, error) {
+	envUUID := client.ModelUUID()
+	charmURL, err := client.GetCharmURL(c.Service)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 
-	hc, err := c.NewClient()
+	hc, err := c.NewClient(ctx)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	client, err := newAuthorizationClient(api.HTTPClient(hc))
+	authClient, err := newAuthorizationClient(api.HTTPClient(hc))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	m, err := client.Authorize(envUUID, charmURL.String(), c.Service, c.Plan, httpbakery.OpenWebBrowser)
+	m, err := authClient.Authorize(envUUID, charmURL.String(), c.Service, c.Plan, hc.VisitWebPage)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -132,18 +126,16 @@ func (c *setPlanCommand) requestMetricCredentials() ([]byte, error) {
 
 // Run implements cmd.Command.
 func (c *setPlanCommand) Run(ctx *cmd.Context) error {
-	credentials, err := c.requestMetricCredentials()
-	if err != nil {
-		return errors.Trace(err)
-	}
-
 	root, err := c.NewAPIRoot()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	api := service.NewClient(root)
-
-	err = api.SetMetricCredentials(c.Service, credentials)
+	client := service.NewClient(root)
+	credentials, err := c.requestMetricCredentials(client, ctx)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	err = client.SetMetricCredentials(c.Service, credentials)
 	if err != nil {
 		return errors.Trace(err)
 	}

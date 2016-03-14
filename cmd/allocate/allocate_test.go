@@ -9,8 +9,8 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/juju/jujuclient"
 	"github.com/juju/juju/jujuclient/jujuclienttesting"
+	coretesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
-	jujutesting "github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
@@ -20,14 +20,14 @@ import (
 var _ = gc.Suite(&allocateSuite{})
 
 type allocateSuite struct {
-	jujutesting.FakeHomeSuite
+	coretesting.FakeJujuXDGDataHomeSuite
 	stub    *testing.Stub
 	mockAPI *mockapi
 	store   jujuclient.ClientStore
 }
 
 func (s *allocateSuite) SetUpTest(c *gc.C) {
-	s.FakeHomeSuite.SetUpTest(c)
+	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.store = &jujuclienttesting.MemStore{
 		Controllers: map[string]jujuclient.ControllerDetails{
 			"controller": {},
