@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	stdtesting "testing"
+	"time"
 
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
@@ -34,6 +35,36 @@ func (s *apiSuite) SetUpTest(c *gc.C) {
 	var err error
 	s.client, err = terms.NewClient(terms.HTTPClient(s.httpClient))
 	c.Assert(err, jc.ErrorIsNil)
+}
+
+func (s *apiSuite) TestSignedAgreements(c *gc.C) {
+	t := time.Now().UTC()
+	s.httpClient.status = http.StatusOK
+	s.httpClient.SetBody(c, []terms.AgreementResponse{
+		{
+			User:      "test-user",
+			Term:      "hello-world-terms",
+			Revision:  1,
+			CreatedOn: t,
+		},
+		{
+			User:      "test-user",
+			Term:      "hello-universe-terms",
+			Revision:  42,
+			CreatedOn: t,
+		},
+	})
+	signedAgreements, err := s.client.GetUsersAgreements()
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(signedAgreements, gc.HasLen, 2)
+	c.Assert(signedAgreements[0].User, gc.Equals, "test-user")
+	c.Assert(signedAgreements[0].Term, gc.Equals, "hello-world-terms")
+	c.Assert(signedAgreements[0].Revision, gc.Equals, 1)
+	c.Assert(signedAgreements[0].CreatedOn, gc.DeepEquals, t)
+	c.Assert(signedAgreements[1].User, gc.Equals, "test-user")
+	c.Assert(signedAgreements[1].Term, gc.Equals, "hello-universe-terms")
+	c.Assert(signedAgreements[1].Revision, gc.Equals, 42)
+	c.Assert(signedAgreements[1].CreatedOn, gc.DeepEquals, t)
 }
 
 func (s *apiSuite) TestUnsignedTerms(c *gc.C) {
@@ -93,7 +124,7 @@ func (s *apiSuite) TestNoFoundReturnsError(c *gc.C) {
 			"hello-universe-terms/1",
 		},
 	})
-	c.Assert(err, gc.ErrorMatches, "failed to get unsigned agreements: Not Found: something failed")
+	c.Assert(err, gc.ErrorMatches, "failed to get unsigned terms: Not Found: something failed")
 }
 
 type mockHttpClient struct {
