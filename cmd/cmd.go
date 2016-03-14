@@ -7,10 +7,11 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/idmclient/ussologin"
-	"github.com/juju/juju/jujuclient"
 	"github.com/juju/persistent-cookiejar"
 	"gopkg.in/juju/environschema.v1/form"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
+
+	"github.com/juju/juju/juju/osenv"
 )
 
 // TODO (mattyw) Http needs to be HTTP
@@ -19,6 +20,13 @@ type HttpCommand struct {
 	cmd.CommandBase
 
 	cookiejar *cookiejar.Jar
+}
+
+// newTokenStore returns a FileTokenStore for storing the USSO oauth token
+// TODO (mattyw) When this function lands in core this function should be
+// removed and the calls should point to jujuclient.
+func newTokenStore() *ussologin.FileTokenStore {
+	return ussologin.NewFileTokenStore(osenv.JujuXDGDataHomePath("store-usso-token"))
 }
 
 // NewClient returns a new HTTP bakery client for commands.
@@ -35,7 +43,7 @@ func (s *HttpCommand) NewClient(ctx *cmd.Context) (*httpbakery.Client, error) {
 	}
 	client := httpbakery.NewClient()
 	client.Jar = s.cookiejar
-	client.VisitWebPage = ussologin.VisitWebPage(newIOFiller(ctx), client.Client, jujuclient.NewTokenStore())
+	client.VisitWebPage = ussologin.VisitWebPage(newIOFiller(ctx), client.Client, newTokenStore())
 	return client, nil
 }
 
