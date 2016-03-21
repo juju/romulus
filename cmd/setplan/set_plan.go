@@ -15,10 +15,8 @@ import (
 	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/names"
 	"gopkg.in/macaroon.v1"
-	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/plan"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 // authorizationClient defines the interface of an api client that
@@ -43,7 +41,6 @@ func NewSetPlanCommand() cmd.Command {
 // Service.MetricCredential for development & demonstration purposes.
 type setPlanCommand struct {
 	modelcmd.ModelCommandBase
-	rcmd.HttpCommand
 
 	Service string
 	Plan    string
@@ -71,11 +68,6 @@ Example:
 	}
 }
 
-// SetFlags implements cmd.Command.
-func (c *setPlanCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.ModelCommandBase.SetFlags(f)
-}
-
 // Init implements cmd.Command.
 func (c *setPlanCommand) Init(args []string) error {
 	if len(args) < 2 {
@@ -93,14 +85,6 @@ func (c *setPlanCommand) Init(args []string) error {
 	return c.ModelCommandBase.Init(args[2:])
 }
 
-// IsSuperCommand implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
-func (c *setPlanCommand) IsSuperCommand() bool { return false }
-
-// AllowInterspersed implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
-func (c *setPlanCommand) AllowInterspersedFlags() bool { return true }
-
 func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *cmd.Context) ([]byte, error) {
 	envUUID := client.ModelUUID()
 	charmURL, err := client.GetCharmURL(c.Service)
@@ -108,7 +92,7 @@ func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *c
 		return nil, errors.Trace(err)
 	}
 
-	hc, err := c.NewClient(ctx)
+	hc, err := c.BakeryClient()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

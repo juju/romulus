@@ -68,7 +68,6 @@ func (s *ListPlansCommandSuite) TestTabularOutput(c *gc.C) {
 			Stub:        s.stub,
 		},
 	}
-	defer listPlans.Close()
 	ctx, err := cmdtesting.RunCommand(c, listPlans, "some-charm-url")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(cmdtesting.Stdout(ctx), gc.Equals,
@@ -189,7 +188,6 @@ func (s *ListPlansCommandSuite) TestGetCommands(c *gc.C) {
 			s.mockAPI.CheckCall(c, 0, "Resolve", t.args[0])
 			s.mockAPI.CheckCall(c, 1, "GetAssociatedPlans", t.apiCall...)
 		}
-		listPlans.Close()
 	}
 }
 
