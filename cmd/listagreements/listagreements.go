@@ -8,11 +8,11 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
 
 	"github.com/juju/romulus/api/terms"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 var (
@@ -47,7 +47,7 @@ var _ cmd.Command = (*listAgreementsCommand)(nil)
 // listAgreementsCommand creates a user agreement to the specified
 // Terms and Conditions document.
 type listAgreementsCommand struct {
-	rcmd.HttpCommand
+	modelcmd.JujuCommandBase
 	out cmd.Output
 }
 
@@ -70,8 +70,7 @@ func (c *listAgreementsCommand) Info() *cmd.Info {
 
 // Run implements Command.Run.
 func (c *listAgreementsCommand) Run(ctx *cmd.Context) error {
-	defer c.Close()
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

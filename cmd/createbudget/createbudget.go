@@ -9,14 +9,14 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 
 	api "github.com/juju/romulus/api/budget"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 type createBudgetCommand struct {
-	rcmd.HttpCommand
+	modelcmd.JujuCommandBase
 	Name  string
 	Value string
 }
@@ -57,8 +57,7 @@ func (c *createBudgetCommand) Init(args []string) error {
 
 // Run implements cmd.Command.Run and has most of the logic for the run command.
 func (c *createBudgetCommand) Run(ctx *cmd.Context) error {
-	defer c.Close()
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

@@ -9,11 +9,11 @@ import (
 	"github.com/gosuri/uitable"
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/budget"
-	rcmd "github.com/juju/romulus/cmd"
 	wireformat "github.com/juju/romulus/wireformat/budget"
 )
 
@@ -24,7 +24,7 @@ func NewListBudgetsCommand() cmd.Command {
 }
 
 type listBudgetsCommand struct {
-	rcmd.HttpCommand
+	modelcmd.JujuCommandBase
 
 	out cmd.Output
 }
@@ -53,8 +53,7 @@ func (c *listBudgetsCommand) SetFlags(f *gnuflag.FlagSet) {
 }
 
 func (c *listBudgetsCommand) Run(ctx *cmd.Context) error {
-	defer c.Close()
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

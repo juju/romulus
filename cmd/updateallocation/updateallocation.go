@@ -12,23 +12,20 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
-	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/budget"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 type updateAllocationCommand struct {
 	modelcmd.ModelCommandBase
-	api apiClient
-	rcmd.HttpCommand
+	api   apiClient
 	Name  string
 	Value string
 }
 
 // NewUpdateAllocationCommand returns a new updateAllocationCommand.
 func NewUpdateAllocationCommand() cmd.Command {
-	return modelcmd.Wrap(&updateAllocationCommand{})
+	return &updateAllocationCommand{}
 }
 
 func (c *updateAllocationCommand) newAPIClient(bakery *httpbakery.Client) (apiClient, error) {
@@ -60,18 +57,6 @@ func (c *updateAllocationCommand) Info() *cmd.Info {
 	}
 }
 
-// SetFlags implements cmd.Command.
-func (c *updateAllocationCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.ModelCommandBase.SetFlags(f)
-}
-
-// AllowInterspersed implements cmd.Command.
-func (c *updateAllocationCommand) AllowInterspersedFlags() bool { return true }
-
-// IsSuperCommand implements cmd.Command.
-// Defined here because of ambiguity between HttpCommand and ModelCommandBase.
-func (c *updateAllocationCommand) IsSuperCommand() bool { return false }
-
 // Init implements cmd.Command.Init.
 func (c *updateAllocationCommand) Init(args []string) error {
 	if len(args) < 2 {
@@ -94,12 +79,11 @@ func (c *updateAllocationCommand) modelUUID() (string, error) {
 
 // Run implements cmd.Command.Run and contains most of the setbudget logic.
 func (c *updateAllocationCommand) Run(ctx *cmd.Context) error {
-	defer c.Close()
 	modelUUID, err := c.modelUUID()
 	if err != nil {
 		return errors.Annotate(err, "failed to get model uuid")
 	}
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

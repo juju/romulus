@@ -12,17 +12,14 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
-	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/budget"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[1-9][0-9]*$`)
 
 type allocateCommand struct {
 	modelcmd.ModelCommandBase
-	rcmd.HttpCommand
 	api      apiClient
 	Budget   string
 	Model    string
@@ -31,8 +28,8 @@ type allocateCommand struct {
 }
 
 // NewAllocateCommand returns a new allocateCommand
-func NewAllocateCommand() cmd.Command {
-	return modelcmd.Wrap(&allocateCommand{})
+func NewAllocateCommand() modelcmd.ModelCommand {
+	return &allocateCommand{}
 }
 
 const doc = `
@@ -58,17 +55,6 @@ func (c *allocateCommand) Info() *cmd.Info {
 	}
 }
 
-// SetFlags implements cmd.Command.
-func (c *allocateCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.ModelCommandBase.SetFlags(f)
-}
-
-// AllowInterspersedFlags implements cmd.Command.
-func (c *allocateCommand) AllowInterspersedFlags() bool { return true }
-
-// IsSuperCommand implements cmd.Command.
-func (c *allocateCommand) IsSuperCommand() bool { return false }
-
 // Init implements cmd.Command.Init.
 func (c *allocateCommand) Init(args []string) error {
 	if len(args) < 2 {
@@ -91,8 +77,7 @@ func (c *allocateCommand) Init(args []string) error {
 
 // Run implements cmd.Command.Run and has most of the logic for the run command.
 func (c *allocateCommand) Run(ctx *cmd.Context) error {
-	defer c.Close()
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}

@@ -14,10 +14,10 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/cmd/modelcmd"
 	"launchpad.net/gnuflag"
 
 	"github.com/juju/romulus/api/terms"
-	rcmd "github.com/juju/romulus/cmd"
 )
 
 var (
@@ -56,7 +56,7 @@ type term struct {
 
 // agreeCommand creates a user agreement to the specified terms.
 type agreeCommand struct {
-	rcmd.HttpCommand
+	modelcmd.JujuCommandBase
 	out cmd.Output
 
 	terms           []term
@@ -105,11 +105,10 @@ func (c *agreeCommand) Init(args []string) error {
 
 // Run implements Command.Run.
 func (c *agreeCommand) Run(ctx *cmd.Context) error {
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	defer c.Close()
 
 	termsClient, err := clientNew(terms.HTTPClient(client))
 	if err != nil {

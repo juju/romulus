@@ -16,6 +16,7 @@ import (
 	"github.com/gosuri/uitable"
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/yaml.v2"
 	"launchpad.net/gnuflag"
@@ -44,7 +45,7 @@ Example:
 
 // ListPlansCommand retrieves plans that are available for the specified charm
 type ListPlansCommand struct {
-	rcmd.HttpCommand
+	modelcmd.JujuCommandBase
 
 	out      cmd.Output
 	CharmURL string
@@ -84,7 +85,7 @@ func (c *ListPlansCommand) Init(args []string) error {
 
 // SetFlags implements Command.SetFlags.
 func (c *ListPlansCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.HttpCommand.SetFlags(f)
+	c.JujuCommandBase.SetFlags(f)
 	defaultFormat := "tabular"
 	c.out.AddFlags(f, defaultFormat, map[string]cmd.Formatter{
 		"yaml":    cmd.FormatYaml,
@@ -99,8 +100,7 @@ func (c *ListPlansCommand) SetFlags(f *gnuflag.FlagSet) {
 // Retrieves the plan from the plans service. The set of plans to be
 // retrieved can be limited using the plan and isv flags.
 func (c *ListPlansCommand) Run(ctx *cmd.Context) (rErr error) {
-	defer c.Close()
-	client, err := c.NewClient(ctx)
+	client, err := c.BakeryClient()
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}
