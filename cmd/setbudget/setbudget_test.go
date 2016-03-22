@@ -18,7 +18,6 @@ var _ = gc.Suite(&setBudgetSuite{})
 
 type setBudgetSuite struct {
 	coretesting.FakeJujuXDGDataHomeSuite
-	testing.CleanupSuite
 	stub    *testing.Stub
 	mockAPI *mockapi
 }
