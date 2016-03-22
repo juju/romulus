@@ -47,7 +47,6 @@ var (
 
 type ListPlansCommandSuite struct {
 	coretesting.FakeJujuXDGDataHomeSuite
-	testing.CleanupSuite
 	mockAPI *mockapi
 	stub    *testing.Stub
 }
