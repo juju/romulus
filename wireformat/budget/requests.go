@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-var baseURL = "https://api.jujucharms.com/omnibus/v2"
+var BaseURL = "https://api.jujucharms.com/omnibus/v2"
 
 // CreateBudgetRequest is used in the requests to the budget service
 // for creating the specified budget.
@@ -30,7 +30,7 @@ func (c CreateBudgetRequest) Body() interface{} {
 
 // URL returns the URL of the request.
 func (CreateBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/budget", baseURL)
+	return fmt.Sprintf("%s/budget", BaseURL)
 }
 
 // ListBudgetsRequest defines a request to the budgets service
@@ -42,7 +42,7 @@ func (ListBudgetsRequest) Method() string { return "GET" }
 
 // URL returns the URL of the request.
 func (ListBudgetsRequest) URL() string {
-	return fmt.Sprintf("%s/budget", baseURL)
+	return fmt.Sprintf("%s/budget", BaseURL)
 }
 
 // SetBudgetRequest defines a request that updates the limit of
@@ -67,7 +67,7 @@ func (r SetBudgetRequest) Body() interface{} {
 
 // URL returns the URL for the request.
 func (r SetBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/budget/%s", baseURL, r.Budget)
+	return fmt.Sprintf("%s/budget/%s", BaseURL, r.Budget)
 }
 
 // GetBudgetRequest defines a request that retrieves a specific budget.
@@ -77,7 +77,7 @@ type GetBudgetRequest struct {
 
 // URL returns the URL for the request.
 func (r GetBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/budget/%s", baseURL, r.Budget)
+	return fmt.Sprintf("%s/budget/%s", BaseURL, r.Budget)
 }
 
 // Method returns the method for the request.
@@ -93,7 +93,7 @@ type CreateAllocationRequest struct {
 
 // URL returns the URL for the request.
 func (r CreateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/budget/%s/allocation", baseURL, r.Budget)
+	return fmt.Sprintf("%s/budget/%s/allocation", BaseURL, r.Budget)
 }
 
 // ContentType return the content-type header to be set for the request.
@@ -118,7 +118,7 @@ func (UpdateAllocationRequest) ContentType() string { return "application/json+p
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", baseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Service)
 }
 
 // Method returns the method for the request.
@@ -140,7 +140,7 @@ type DeleteAllocationRequest struct {
 
 // URL returns the URL for the request.
 func (r DeleteAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", baseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Service)
 }
 
 // Method returns the method for the request.
