@@ -94,7 +94,7 @@ func formatTabular(value interface{}) ([]byte, error) {
 	table.MaxColWidth = 50
 	table.Wrap = true
 
-	table.AddRow("MODEL", "SERVICES", "SPENT", "ALLOCATED BY", "USAGE")
+	table.AddRow("MODEL", "SERVICES", "SPENT", "ALLOCATED", "BY", "USAGE")
 	for _, allocation := range b.Allocations {
 		firstLine := true
 		// We'll sort the service names to avoid nondeterministic
@@ -107,7 +107,7 @@ func formatTabular(value interface{}) ([]byte, error) {
 		for _, serviceName := range services {
 			service, _ := allocation.Services[serviceName]
 			if firstLine {
-				table.AddRow(allocation.Model, serviceName, service.Consumed, allocation.Owner, allocation.Usage)
+				table.AddRow(allocation.Model, serviceName, service.Consumed, allocation.Limit, allocation.Owner, allocation.Usage)
 				firstLine = false
 				continue
 			}
@@ -116,7 +116,7 @@ func formatTabular(value interface{}) ([]byte, error) {
 
 	}
 	table.AddRow("", "", "", "", "")
-	table.AddRow("TOTAL", "", b.Total.Consumed, b.Total.Allocated, b.Total.Usage)
+	table.AddRow("TOTAL", "", b.Total.Consumed, b.Total.Allocated, "", b.Total.Usage)
 	table.AddRow("BUDGET", "", "", b.Limit, "")
 	table.AddRow("UNALLOCATED", "", "", b.Total.Unallocated, "")
 	return []byte(table.String()), nil
