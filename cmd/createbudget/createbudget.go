@@ -69,7 +69,7 @@ func (c *createBudgetCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create the budget")
 	}
-	fmt.Fprintf(ctx.Stdout, resp)
+	fmt.Fprintln(ctx.Stdout, resp)
 	return nil
 }
 
