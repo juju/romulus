@@ -38,6 +38,7 @@ func (s *showBudgetSuite) TestShowBudgetCommand(c *gc.C) {
 		err    string
 		budget string
 		apierr string
+		output string
 	}{{
 		about: "missing argument",
 		err:   `missing arguments`,
@@ -54,8 +55,16 @@ func (s *showBudgetSuite) TestShowBudgetCommand(c *gc.C) {
 		about:  "all ok",
 		args:   []string{"personal"},
 		budget: "personal",
-	},
-	}
+		output: "" +
+			"MODEL      \tSERVICES \tSPENT\tALLOCATED\tBY       \tUSAGE\n" +
+			"model.joe  \tmysql    \t200  \t1200     \tuser.joe \t42%  \n" +
+			"           \twordpress\t300  \t         \t         \n" +
+			"model.jess \tlandscape\t600  \t1000     \tuser.jess\t60%  \n" +
+			"           \t         \t     \t         \t         \n" +
+			"TOTAL      \t         \t1100 \t2200     \t         \t50%  \n" +
+			"BUDGET     \t         \t     \t4000     \t         \n" +
+			"UNALLOCATED\t         \t     \t1800     \t         \n",
+	}}
 
 	for i, test := range tests {
 		c.Logf("running test %d: %v", i, test.about)
@@ -67,10 +76,12 @@ func (s *showBudgetSuite) TestShowBudgetCommand(c *gc.C) {
 
 		showBudget := showbudget.NewShowBudgetCommand()
 
-		_, err := cmdtesting.RunCommand(c, showBudget, test.args...)
+		ctx, err := cmdtesting.RunCommand(c, showBudget, test.args...)
 		if test.err == "" {
 			c.Assert(err, jc.ErrorIsNil)
 			s.stub.CheckCalls(c, []testing.StubCall{{"GetBudget", []interface{}{test.budget}}})
+			output := cmdtesting.Stdout(ctx)
+			c.Assert(output, gc.Equals, test.output)
 		} else {
 			c.Assert(err, gc.ErrorMatches, test.err)
 		}
@@ -87,40 +98,38 @@ func (api *mockapi) GetBudget(name string) (*budget.BudgetWithAllocations, error
 		return nil, err
 	}
 	return &budget.BudgetWithAllocations{
-		Limit: "4000.00",
+		Limit: "4000",
 		Total: budget.BudgetTotals{
-			Allocated:   "2200.00",
-			Unallocated: "1800.00",
-			Available:   "1100,00",
-			Consumed:    "1100.0",
+			Allocated:   "2200",
+			Unallocated: "1800",
+			Available:   "1100",
+			Consumed:    "1100",
 			Usage:       "50%",
 		},
 		Allocations: []budget.Allocation{{
 			Owner:    "user.joe",
-			Limit:    "1200.00",
-			Consumed: "500.00",
+			Limit:    "1200",
+			Consumed: "500",
 			Usage:    "42%",
 			Model:    "model.joe",
 			Services: map[string]budget.ServiceAllocation{
 				"wordpress": budget.ServiceAllocation{
-					Consumed: "300.00",
+					Consumed: "300",
 				},
 				"mysql": budget.ServiceAllocation{
-					Consumed: "200.00",
+					Consumed: "200",
 				},
 			},
 		}, {
 			Owner:    "user.jess",
-			Limit:    "1000.00",
-			Consumed: "600.00",
+			Limit:    "1000",
+			Consumed: "600",
 			Usage:    "60%",
 			Model:    "model.jess",
 			Services: map[string]budget.ServiceAllocation{
 				"landscape": budget.ServiceAllocation{
-					Consumed: "600.00",
+					Consumed: "600",
 				},
 			},
-		},
-		},
-	}, nil
+		}}}, nil
 }
