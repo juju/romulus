@@ -258,7 +258,7 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
@@ -283,7 +283,7 @@ func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
@@ -306,7 +306,7 @@ func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
@@ -504,7 +504,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
@@ -529,7 +529,7 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
@@ -552,7 +552,7 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
+				"application/json-patch",
 				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
