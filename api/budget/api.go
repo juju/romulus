@@ -18,6 +18,10 @@ import (
 	wireformat "github.com/juju/romulus/wireformat/budget"
 )
 
+type httpErrorResponse struct {
+	Error string `json:"error"`
+}
+
 type httpClient interface {
 	DoWithBody(*http.Request, io.ReadSeeker) (*http.Response, error)
 }
@@ -203,11 +207,11 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 	if resp.StatusCode == http.StatusServiceUnavailable {
 		return wireformat.NotAvailError{Resp: resp.StatusCode}
 	} else if resp.StatusCode != http.StatusOK {
-		response := "http request failed"
+		response := httpErrorResponse{}
 		json.NewDecoder(resp.Body).Decode(&response)
 		return wireformat.HttpError{
 			StatusCode: resp.StatusCode,
-			Message:    response,
+			Message:    response.Error,
 		}
 
 	}
