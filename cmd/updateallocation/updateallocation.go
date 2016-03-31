@@ -95,6 +95,6 @@ func (c *updateAllocationCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to update the allocation")
 	}
-	fmt.Fprint(ctx.Stdout, resp)
+	fmt.Fprintln(ctx.Stdout, resp)
 	return nil
 }

@@ -68,7 +68,7 @@ func (s *allocateSuite) TestAllocate(c *gc.C) {
 	s.mockAPI.resp = "allocation updated"
 	ctx, err := s.run(c, "name:100", "db")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "allocation updated")
+	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "allocation updated\n")
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "100", "model-uuid", []string{"db"})
 }
 

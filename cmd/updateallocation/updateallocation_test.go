@@ -68,7 +68,7 @@ func (s *updateAllocationSuite) TestUpdateAllocation(c *gc.C) {
 	s.mockAPI.resp = "name budget set to 5"
 	ctx, err := s.run(c, "name", "5")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "name budget set to 5")
+	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "name budget set to 5\n")
 	s.mockAPI.CheckCall(c, 0, "UpdateAllocation", "model-uuid", "name", "5")
 }
 

@@ -89,7 +89,7 @@ func (c *allocateCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create allocation")
 	}
-	fmt.Fprintf(ctx.Stdout, resp)
+	fmt.Fprintln(ctx.Stdout, resp)
 	return nil
 }
 
