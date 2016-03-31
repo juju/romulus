@@ -34,7 +34,7 @@ func (s *setBudgetSuite) TestSetBudget(c *gc.C) {
 	set := setbudget.NewSetBudgetCommand()
 	ctx, err := cmdtesting.RunCommand(c, set, "name", "5")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "name budget set to 5")
+	c.Assert(cmdtesting.Stdout(ctx), jc.DeepEquals, "name budget set to 5\n")
 	s.mockAPI.CheckCall(c, 0, "SetBudget", "name", "5")
 }
 
