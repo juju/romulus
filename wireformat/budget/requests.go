@@ -153,7 +153,11 @@ type HttpError struct {
 }
 
 func (e HttpError) Error() string {
-	return fmt.Sprintf("%d: %s", e.StatusCode, e.Message)
+	if e.Message != "" {
+		return e.Message
+	} else {
+		return fmt.Sprintf("%d: %s", e.StatusCode, "request failed")
+	}
 }
 
 // NotAvailError indicates that the service is either unreachable or unavailable.

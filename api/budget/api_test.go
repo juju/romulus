@@ -20,6 +20,10 @@ import (
 	wireformat "github.com/juju/romulus/wireformat/budget"
 )
 
+type httpErr struct {
+	Error string `json:"error"`
+}
+
 func Test(t *testing.T) {
 	gc.TestingT(t)
 }
@@ -54,7 +58,7 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 }
 
 func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal("budget already exists")
+	respBody, err := json.Marshal(httpErr{Error: "budget already exists"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
@@ -62,7 +66,7 @@ func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.CreateBudget("personal", "200")
-	c.Assert(err, gc.ErrorMatches, "400: budget already exists")
+	c.Assert(err, gc.ErrorMatches, "budget already exists")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -203,15 +207,15 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 }
 
 func (t *TSuite) TestListBudgetsServerError(c *gc.C) {
-	respBody, err := json.Marshal("budget already exists")
+	respBody, err := json.Marshal(httpErr{Error: "budget already exists"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
-		RespCode: http.StatusBadRequest,
+		RespCode: http.StatusNotFound,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.ListBudgets()
-	c.Assert(err, gc.ErrorMatches, "400: budget already exists")
+	c.Assert(err, gc.ErrorMatches, "budget already exists")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -269,7 +273,7 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 }
 
 func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal("cannot update budget")
+	respBody, err := json.Marshal(httpErr{Error: "cannot update budget"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
@@ -277,7 +281,7 @@ func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.SetBudget("personal", "200")
-	c.Assert(err, gc.ErrorMatches, "400: cannot update budget")
+	c.Assert(err, gc.ErrorMatches, "cannot update budget")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -375,7 +379,7 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 }
 
 func (t *TSuite) TestGetBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal("budget not found")
+	respBody, err := json.Marshal(httpErr{Error: "budget not found"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusNotFound,
@@ -383,7 +387,7 @@ func (t *TSuite) TestGetBudgetServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.GetBudget("personal")
-	c.Assert(err, gc.ErrorMatches, "404: budget not found")
+	c.Assert(err, gc.ErrorMatches, "budget not found")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -441,7 +445,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 }
 
 func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal("cannot create allocation")
+	respBody, err := json.Marshal(httpErr{Error: "cannot create allocation"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
@@ -449,7 +453,7 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
-	c.Assert(err, gc.ErrorMatches, "400: cannot create allocation")
+	c.Assert(err, gc.ErrorMatches, "cannot create allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -515,7 +519,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 }
 
 func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal("cannot update allocation")
+	respBody, err := json.Marshal(httpErr{Error: "cannot update allocation"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
@@ -523,7 +527,7 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.UpdateAllocation("model-uuid", "db", "200")
-	c.Assert(err, gc.ErrorMatches, "400: cannot update allocation")
+	c.Assert(err, gc.ErrorMatches, "cannot update allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -585,7 +589,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 }
 
 func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal("cannot delete allocation")
+	respBody, err := json.Marshal(httpErr{Error: "cannot delete allocation"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
@@ -593,7 +597,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.DeleteAllocation("model-uuid", "db")
-	c.Assert(err, gc.ErrorMatches, "400: cannot delete allocation")
+	c.Assert(err, gc.ErrorMatches, "cannot delete allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
