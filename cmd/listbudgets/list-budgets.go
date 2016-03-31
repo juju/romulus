@@ -19,7 +19,7 @@ import (
 
 // NewListBudgetsCommand returns a new command that is used
 // to list budgets a user has access to.
-func NewListBudgetsCommand() cmd.Command {
+func NewListBudgetsCommand() modelcmd.CommandBase {
 	return &listBudgetsCommand{}
 }
 
@@ -49,6 +49,7 @@ func (c *listBudgetsCommand) Info() *cmd.Info {
 func (c *listBudgetsCommand) SetFlags(f *gnuflag.FlagSet) {
 	c.out.AddFlags(f, "tabular", map[string]cmd.Formatter{
 		"tabular": formatTabular,
+		"json":    cmd.FormatJson,
 	})
 }
 
