@@ -86,12 +86,12 @@ func (s *listBudgetsSuite) TestListBudgetsOutput(c *gc.C) {
 	// Expected command output. Make sure budgets are sorted alphabetically.
 	expected := "" +
 		"BUDGET       \tMONTHLY\tALLOCATED\tAVAILABLE\tSPENT\n" +
-		"personal     \t50     \t30       \t45       \t5    \n" +
-		"team         \t50     \t10       \t40       \t10   \n" +
-		"work         \t200    \t100      \t150      \t50   \n" +
-		"TOTAL        \t300    \t140      \t235      \t65   \n" +
+		"personal     \t     50\t       30\t       45\t    5\n" +
+		"team         \t     50\t       10\t       40\t   10\n" +
+		"work         \t    200\t      100\t      150\t   50\n" +
+		"TOTAL        \t    300\t      140\t      235\t   65\n" +
 		"             \t       \t         \t         \t     \n" +
-		"Credit limit:\t400    \t         \t         \t     \n"
+		"Credit limit:\t    400\t         \t         \t     \n"
 
 	listBudgets := listbudgets.NewListBudgetsCommand()
 
@@ -115,9 +115,9 @@ func (s *listBudgetsSuite) TestListBudgetsOutputNoBudgets(c *gc.C) {
 	}
 	expected := "" +
 		"BUDGET       \tMONTHLY\tALLOCATED\tAVAILABLE\tSPENT\n" +
-		"TOTAL        \t0      \t0        \t0        \t0    \n" +
+		"TOTAL        \t      0\t        0\t        0\t    0\n" +
 		"             \t       \t         \t         \t     \n" +
-		"Credit limit:\t0      \t         \t         \t     \n"
+		"Credit limit:\t      0\t         \t         \t     \n"
 
 	listBudgets := listbudgets.NewListBudgetsCommand()
 

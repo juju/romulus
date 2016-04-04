@@ -57,13 +57,13 @@ func (s *showBudgetSuite) TestShowBudgetCommand(c *gc.C) {
 		budget: "personal",
 		output: "" +
 			"MODEL      \tSERVICES \tSPENT\tALLOCATED\tBY       \tUSAGE\n" +
-			"model.joe  \tmysql    \t200  \t1200     \tuser.joe \t42%  \n" +
-			"           \twordpress\t300  \t         \t         \n" +
-			"model.jess \tlandscape\t600  \t1000     \tuser.jess\t60%  \n" +
+			"model.joe  \tmysql    \t  200\t     1200\tuser.joe \t  42%\n" +
+			"           \twordpress\t  300\t         \t         \n" +
+			"model.jess \tlandscape\t  600\t     1000\tuser.jess\t  60%\n" +
 			"           \t         \t     \t         \t         \n" +
-			"TOTAL      \t         \t1100 \t2200     \t         \t50%  \n" +
-			"BUDGET     \t         \t     \t4000     \t         \n" +
-			"UNALLOCATED\t         \t     \t1800     \t         \n",
+			"TOTAL      \t         \t 1100\t     2200\t         \t  50%\n" +
+			"BUDGET     \t         \t     \t     4000\t         \n" +
+			"UNALLOCATED\t         \t     \t     1800\t         \n",
 	}}
 
 	for i, test := range tests {
