@@ -19,7 +19,7 @@ import (
 
 // NewShowBudgetCommand returns a new command that is used
 // to show details of the specified wireformat.
-func NewShowBudgetCommand() cmd.Command {
+func NewShowBudgetCommand() modelcmd.CommandBase {
 	return &showBudgetCommand{}
 }
 
@@ -60,6 +60,7 @@ func (c *showBudgetCommand) Init(args []string) error {
 func (c *showBudgetCommand) SetFlags(f *gnuflag.FlagSet) {
 	c.out.AddFlags(f, "tabular", map[string]cmd.Formatter{
 		"tabular": formatTabular,
+		"json":    cmd.FormatJson,
 	})
 }
 

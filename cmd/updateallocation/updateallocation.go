@@ -24,7 +24,7 @@ type updateAllocationCommand struct {
 }
 
 // NewUpdateAllocationCommand returns a new updateAllocationCommand.
-func NewUpdateAllocationCommand() cmd.Command {
+func NewUpdateAllocationCommand() modelcmd.ModelCommand {
 	return &updateAllocationCommand{}
 }
 
