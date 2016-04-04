@@ -72,11 +72,18 @@ func (s *allocateSuite) TestAllocate(c *gc.C) {
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "100", "model-uuid", []string{"db"})
 }
 
-func (s *allocateSuite) TestallocateAPIError(c *gc.C) {
+func (s *allocateSuite) TestAllocateAPIError(c *gc.C) {
 	s.stub.SetErrors(errors.New("something failed"))
 	_, err := s.run(c, "name:100", "db")
 	c.Assert(err, gc.ErrorMatches, "failed to create allocation: something failed")
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "100", "model-uuid", []string{"db"})
+}
+
+func (s *allocateSuite) TestAllocateZero(c *gc.C) {
+	s.mockAPI.resp = "allocation updated"
+	_, err := s.run(c, "name:0", "db")
+	c.Assert(err, jc.ErrorIsNil)
+	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "0", "model-uuid", []string{"db"})
 }
 
 func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
@@ -96,6 +103,18 @@ func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
 		about:         "service not specified",
 		args:          []string{"name:100"},
 		expectedError: "budget and service name required",
+	}, {
+		about:         "negative allocation limit",
+		args:          []string{"name:-100", "db"},
+		expectedError: "invalid budget specification, expecting <budget>:<limit>",
+	}, {
+		about:         "non-numeric allocation limit",
+		args:          []string{"name:abcd", "db"},
+		expectedError: "invalid budget specification, expecting <budget>:<limit>",
+	}, {
+		about:         "empty allocation limit",
+		args:          []string{"name:", "db"},
+		expectedError: "invalid budget specification, expecting <budget>:<limit>",
 	}}
 	for i, test := range tests {
 		c.Logf("test %d: %s", i, test.about)
