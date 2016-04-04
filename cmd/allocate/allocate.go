@@ -16,7 +16,7 @@ import (
 	api "github.com/juju/romulus/api/budget"
 )
 
-var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[1-9][0-9]*$`)
+var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[0-9]+$`)
 
 type allocateCommand struct {
 	modelcmd.ModelCommandBase
