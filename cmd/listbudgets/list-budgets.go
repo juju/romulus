@@ -87,6 +87,9 @@ func formatTabular(value interface{}) ([]byte, error) {
 	table := uitable.New()
 	table.MaxColWidth = 50
 	table.Wrap = true
+	for _, col := range []int{1, 2, 3, 4} {
+		table.RightAlign(col)
+	}
 
 	table.AddRow("BUDGET", "MONTHLY", "ALLOCATED", "AVAILABLE", "SPENT")
 	for _, budgetEntry := range b.Budgets {
