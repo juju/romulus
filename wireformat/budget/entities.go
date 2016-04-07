@@ -6,6 +6,8 @@
 package budget
 
 import (
+	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -14,6 +16,24 @@ type BudgetWithAllocations struct {
 	Limit       string       `json:"limit, omitempty"`
 	Total       BudgetTotals `json:"total"`
 	Allocations []Allocation `json:"allocations, omitempty"`
+}
+
+// SortedAllocations have additional methods that allow for sorting allocations.
+type SortedAllocations []Allocation
+
+// Len is part of the sort.Interface implementation.
+func (a SortedAllocations) Len() int {
+	return len(a)
+}
+
+// Swap is part of the sort.Interface implementation.
+func (a SortedAllocations) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+// Less is part of the sort.Interface implementation.
+func (a SortedAllocations) Less(i, j int) bool {
+	return a[i].SortableKey() < a[j].SortableKey()
 }
 
 type BudgetTotals struct {
@@ -34,6 +54,20 @@ type Allocation struct {
 	Usage    string                       `json:"usage"`
 	Model    string                       `json:"model"`
 	Services map[string]ServiceAllocation `json:"services"`
+}
+
+// SortableKey returns a key by which allocations can be sorted.
+func (a Allocation) SortableKey() string {
+	if len(a.Services) == 0 {
+		return a.Model
+	} else {
+		var services []string
+		for svc := range a.Services {
+			services = append(services, svc)
+		}
+		sort.Strings(services)
+		return fmt.Sprintf("%s:%s", a.Model, services[0])
+	}
 }
 
 // ServiceAllocation represents the amount the user
