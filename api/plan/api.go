@@ -19,7 +19,7 @@ import (
 	wireformat "github.com/juju/romulus/wireformat/plan"
 )
 
-var baseURL = "https://api.jujucharms.com/omnibus/v2"
+var DefaultURL = "https://api.jujucharms.com/omnibus/v2"
 
 // Client defines the interface available to clients of the plan api.
 type Client interface {
@@ -81,7 +81,7 @@ func NewAuthorizationClient(options ...ClientOption) (AuthorizationClient, error
 func NewClient(options ...ClientOption) (*client, error) {
 	c := &client{
 		client:  httpbakery.NewClient(),
-		baseURL: baseURL,
+		baseURL: DefaultURL,
 	}
 
 	for _, option := range options {
