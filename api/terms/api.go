@@ -18,7 +18,7 @@ import (
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 )
 
-var baseURL = "https://api.jujucharms.com/terms/v1"
+var BaseURL = "https://api.jujucharms.com/terms/v1"
 
 // CheckAgreementsRequest holds a slice of terms and the /v1/agreement
 // endpoint will check if the user has agreed to the specified terms
@@ -119,7 +119,7 @@ func (c *client) GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse
 	for _, t := range p.Terms {
 		values.Add("Terms", t)
 	}
-	u := fmt.Sprintf("%s/agreement?%s", baseURL, values.Encode())
+	u := fmt.Sprintf("%s/agreement?%s", BaseURL, values.Encode())
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -148,7 +148,7 @@ func (c *client) GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse
 
 // SaveAgreements saves a user agreement to the specificed terms document.
 func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, error) {
-	u := fmt.Sprintf("%s/agreement", baseURL)
+	u := fmt.Sprintf("%s/agreement", BaseURL)
 	req, err := http.NewRequest("POST", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -181,7 +181,7 @@ func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, erro
 
 // GetUsersAgreements returns all agreements the user has made.
 func (c *client) GetUsersAgreements() ([]AgreementResponse, error) {
-	u := fmt.Sprintf("%s/agreements", baseURL)
+	u := fmt.Sprintf("%s/agreements", BaseURL)
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
