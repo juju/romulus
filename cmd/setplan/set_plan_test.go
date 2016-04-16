@@ -12,6 +12,7 @@ import (
 	"github.com/juju/cmd/cmdtesting"
 	"github.com/juju/errors"
 	jjjtesting "github.com/juju/juju/juju/testing"
+	"github.com/juju/juju/state"
 	"github.com/juju/juju/testcharms"
 	jjtesting "github.com/juju/juju/testing"
 	"github.com/juju/testing"
@@ -46,7 +47,13 @@ func (s *setPlanCommandSuite) SetUpTest(c *gc.C) {
 		fmt.Sprintf("local:quantal/%s-%d", ch.Meta().Name, ch.Revision()),
 	)
 	s.charmURL = curl.String()
-	dummyCharm, err := s.State.AddCharm(ch, curl, "dummy-path", "dummy-1")
+	charmInfo := state.CharmInfo{
+		Charm:       ch,
+		ID:          curl,
+		StoragePath: "dummy-path",
+		SHA256:      "dummy-1",
+	}
+	dummyCharm, err := s.State.AddCharm(charmInfo)
 	c.Assert(err, jc.ErrorIsNil)
 	s.AddTestingService(c, "mysql", dummyCharm)
 
