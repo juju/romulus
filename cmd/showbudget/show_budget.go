@@ -9,13 +9,19 @@ import (
 	"github.com/gosuri/uitable"
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/juju/api/modelmanager"
+	"github.com/juju/juju/apiserver/params"
 	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/loggo"
+	"github.com/juju/names"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/budget"
 	wireformat "github.com/juju/romulus/wireformat/budget"
 )
+
+var logger = loggo.GetLogger("romulus.cmd.showbudget")
 
 // NewShowBudgetCommand returns a new command that is used
 // to show details of the specified wireformat.
@@ -24,7 +30,7 @@ func NewShowBudgetCommand() modelcmd.CommandBase {
 }
 
 type showBudgetCommand struct {
-	modelcmd.JujuCommandBase
+	modelcmd.ModelCommandBase
 
 	out    cmd.Output
 	budget string
@@ -69,7 +75,7 @@ func (c *showBudgetCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create an http client")
 	}
-	api, err := newAPIClient(client)
+	api, err := newBudgetAPIClient(client)
 	if err != nil {
 		return errors.Annotate(err, "failed to create an api client")
 	}
@@ -77,11 +83,39 @@ func (c *showBudgetCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to retrieve the budget")
 	}
+	c.resolveModelNames(budget)
 	err = c.out.Write(ctx, budget)
-	if err != nil {
-		return errors.Trace(err)
+	return errors.Trace(err)
+}
+
+// resolveModelNames is a best-effort method to resolve model names - if we
+// encounter any error, we do not issue an error.
+func (c *showBudgetCommand) resolveModelNames(budget *wireformat.BudgetWithAllocations) {
+	models := make([]names.ModelTag, len(budget.Allocations))
+	for i, allocation := range budget.Allocations {
+		models[i] = names.NewModelTag(allocation.Model)
 	}
-	return nil
+	client, err := newAPIClient(c)
+	if err != nil {
+		logger.Errorf("failed to open the API client: %v", err)
+		return
+	}
+	modelInfoSlice, err := client.ModelInfo(models)
+	if err != nil {
+		logger.Errorf("failed to retrieve model info: %v", err)
+		return
+	}
+	for j, info := range modelInfoSlice {
+		if info.Error != nil {
+			logger.Errorf("failed to get model info for model %q: %v", models[j], info.Error)
+			continue
+		}
+		for i, allocation := range budget.Allocations {
+			if info.Result.UUID == allocation.Model {
+				budget.Allocations[i].Model = info.Result.Name
+			}
+		}
+	}
 }
 
 // formatTabular returns a tabular view of available budgets.
@@ -128,11 +162,25 @@ func formatTabular(value interface{}) ([]byte, error) {
 
 var newAPIClient = newAPIClientImpl
 
-func newAPIClientImpl(c *httpbakery.Client) (apiClient, error) {
+func newAPIClientImpl(c *showBudgetCommand) (APIClient, error) {
+	root, err := c.NewAPIRoot()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	return modelmanager.NewClient(root), nil
+}
+
+type APIClient interface {
+	ModelInfo(tags []names.ModelTag) ([]params.ModelInfoResult, error)
+}
+
+var newBudgetAPIClient = newBudgetAPIClientImpl
+
+func newBudgetAPIClientImpl(c *httpbakery.Client) (budgetAPIClient, error) {
 	client := api.NewClient(c)
 	return client, nil
 }
 
-type apiClient interface {
+type budgetAPIClient interface {
 	GetBudget(string) (*wireformat.BudgetWithAllocations, error)
 }
