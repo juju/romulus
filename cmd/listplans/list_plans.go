@@ -54,7 +54,7 @@ type ListPlansCommand struct {
 }
 
 // NewListPlansCommand creates a new ListPlansCommand.
-func NewListPlansCommand() cmd.Command {
+func NewListPlansCommand() modelcmd.CommandBase {
 	return &ListPlansCommand{
 		CharmResolver: rcmd.NewCharmStoreResolver(),
 	}
