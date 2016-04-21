@@ -191,6 +191,9 @@ func (c *client) GetUsersAgreements() ([]AgreementResponse, error) {
 		return nil, errors.Trace(err)
 	}
 	if response.StatusCode != http.StatusOK {
+		if response.StatusCode == http.StatusNotFound {
+			return []AgreementResponse{}, nil
+		}
 		b, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			return nil, errors.Errorf("failed to get signed agreements: %v", response.Status)

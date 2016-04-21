@@ -79,6 +79,13 @@ func (s *listAgreementsSuite) TestGetUsersAgreements(c *gc.C) {
 	c.Assert(ctx, gc.NotNil)
 	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, "- user: test-user\n  term: test-term\n  revision: 1\n  createdon: 2015-12-25T00:00:00Z\n")
 	c.Assert(s.client.called, jc.IsTrue)
+
+	s.client.setAgreements([]terms.AgreementResponse{})
+	ctx, err = cmdtesting.RunCommand(c, listagreements.NewListAgreementsCommand())
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(ctx, gc.NotNil)
+	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, "[]\n")
+	c.Assert(s.client.called, jc.IsTrue)
 }
 
 type mockClient struct {
