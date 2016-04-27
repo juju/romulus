@@ -127,6 +127,11 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 	}
 }
 
+func (s *setPlanCommandSuite) TestNoArgs(c *gc.C) {
+	_, err := cmdtesting.RunCommand(c, setplan.NewSetPlanCommand())
+	c.Assert(err, gc.ErrorMatches, "need to specify service name and plan url")
+}
+
 func newMockAPI() (*mockapi, error) {
 	kp, err := bakery.GenerateKey()
 	if err != nil {

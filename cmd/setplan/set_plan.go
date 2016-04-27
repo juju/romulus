@@ -71,7 +71,7 @@ Example:
 // Init implements cmd.Command.
 func (c *setPlanCommand) Init(args []string) error {
 	if len(args) < 2 {
-		return errors.New("need to specify plan uuid and service name")
+		return errors.New("need to specify service name and plan url")
 	}
 
 	serviceName := args[0]
