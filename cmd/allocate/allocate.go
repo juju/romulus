@@ -8,9 +8,12 @@ import (
 	"regexp"
 	"strings"
 
+	"launchpad.net/gnuflag"
+
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/utils"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 
 	api "github.com/juju/romulus/api/budget"
@@ -20,11 +23,11 @@ var budgetWithLimitRe = regexp.MustCompile(`^[a-zA-Z0-9\-]+:[0-9]+$`)
 
 type allocateCommand struct {
 	modelcmd.ModelCommandBase
-	api      apiClient
-	Budget   string
-	Model    string
-	Services []string
-	Limit    string
+	api       apiClient
+	Budget    string
+	ModelUUID string
+	Services  []string
+	Limit     string
 }
 
 // NewAllocateCommand returns a new allocateCommand
@@ -44,7 +47,20 @@ Example:
 
  juju allocate somebudget:42 db
      Assigns service "db" to an allocation on budget "somebudget" with the limit "42".
+
+Service names assume the current selected model, unless otherwise specified with:
+
+ juju allocate -m [<controller name:]<model name> ...
+
+Models may also be referenced by UUID when necessary:
+
+ juju allocate --model-uuid <uuid> ...
 `
+
+// SetFlags implements cmd.Command.SetFlags.
+func (c *allocateCommand) SetFlags(f *gnuflag.FlagSet) {
+	f.StringVar(&c.ModelUUID, "model-uuid", "", "Model UUID of allocation.")
+}
 
 // Info implements cmd.Command.Info.
 func (c *allocateCommand) Info() *cmd.Info {
@@ -66,9 +82,15 @@ func (c *allocateCommand) Init(args []string) error {
 	if err != nil {
 		return err
 	}
-	c.Model, err = c.modelUUID()
-	if err != nil {
-		return err
+	if c.ModelUUID == "" {
+		c.ModelUUID, err = c.modelUUID()
+		if err != nil {
+			return err
+		}
+	} else {
+		if !utils.IsValidUUIDString(c.ModelUUID) {
+			return errors.NotValidf("model UUID %q", c.ModelUUID)
+		}
 	}
 
 	c.Services = args[1:]
@@ -85,7 +107,7 @@ func (c *allocateCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to create an api client")
 	}
-	resp, err := api.CreateAllocation(c.Budget, c.Limit, c.Model, c.Services)
+	resp, err := api.CreateAllocation(c.Budget, c.Limit, c.ModelUUID, c.Services)
 	if err != nil {
 		return errors.Annotate(err, "failed to create allocation")
 	}
