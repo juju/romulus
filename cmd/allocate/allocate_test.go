@@ -86,6 +86,13 @@ func (s *allocateSuite) TestAllocateZero(c *gc.C) {
 	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "0", "model-uuid", []string{"db"})
 }
 
+func (s *allocateSuite) TestAllocateModelUUID(c *gc.C) {
+	s.mockAPI.resp = "allocation updated"
+	_, err := s.run(c, "name:0", "--model-uuid", "30f7a9f2-220d-4268-b336-35e7daacae79", "db")
+	c.Assert(err, jc.ErrorIsNil)
+	s.mockAPI.CheckCall(c, 0, "CreateAllocation", "name", "0", "30f7a9f2-220d-4268-b336-35e7daacae79", []string{"db"})
+}
+
 func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
 	tests := []struct {
 		about         string
@@ -115,6 +122,10 @@ func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
 		about:         "empty allocation limit",
 		args:          []string{"name:", "db"},
 		expectedError: "invalid budget specification, expecting <budget>:<limit>",
+	}, {
+		about:         "invalid model UUID",
+		args:          []string{"--model-uuid", "nope", "name:100", "db"},
+		expectedError: `model UUID "nope" not valid`,
 	}}
 	for i, test := range tests {
 		c.Logf("test %d: %s", i, test.about)
