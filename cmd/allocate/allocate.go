@@ -80,7 +80,7 @@ func (c *allocateCommand) Init(args []string) error {
 	var err error
 	c.Budget, c.Limit, err = parseBudgetWithLimit(budgetWithLimit)
 	if err != nil {
-		return err
+		return errors.Annotate(err, `expected args in the form "budget:limit [service ...]"`)
 	}
 	if c.ModelUUID == "" {
 		c.ModelUUID, err = c.modelUUID()
