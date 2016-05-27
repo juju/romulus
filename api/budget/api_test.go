@@ -509,7 +509,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -534,7 +534,7 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -557,7 +557,7 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -583,7 +583,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -604,7 +604,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -623,7 +623,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/application/db/allocation",
 				map[string]interface{}{},
 			}}})
 }

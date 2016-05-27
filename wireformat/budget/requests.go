@@ -118,7 +118,7 @@ func (UpdateAllocationRequest) ContentType() string { return "application/json+p
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Application)
+	return fmt.Sprintf("%s/model/%s/application/%s/allocation", BaseURL, r.Model, r.Application)
 }
 
 // Method returns the method for the request.
@@ -140,7 +140,7 @@ type DeleteAllocationRequest struct {
 
 // URL returns the URL for the request.
 func (r DeleteAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Application)
+	return fmt.Sprintf("%s/model/%s/application/%s/allocation", BaseURL, r.Model, r.Application)
 }
 
 // Method returns the method for the request.
