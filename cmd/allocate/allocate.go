@@ -46,7 +46,7 @@ Usage:
 Example:
 
  juju allocate somebudget:42 db
-     Assigns service "db" to an allocation on budget "somebudget" with the limit "42".
+     Assigns application "db" to an allocation on budget "somebudget" with the limit "42".
 
 Service names assume the current selected model, unless otherwise specified with:
 

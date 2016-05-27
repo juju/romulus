@@ -13,7 +13,7 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/juju/api/service"
 	"github.com/juju/juju/cmd/modelcmd"
-	"github.com/juju/names"
+	"gopkg.in/juju/names.v2"
 	"gopkg.in/macaroon.v1"
 
 	api "github.com/juju/romulus/api/plan"
@@ -42,8 +42,8 @@ func NewSetPlanCommand() cmd.Command {
 type setPlanCommand struct {
 	modelcmd.ModelCommandBase
 
-	Service string
-	Plan    string
+	Application string
+	Plan        string
 }
 
 // Info implements cmd.Command.
@@ -74,20 +74,20 @@ func (c *setPlanCommand) Init(args []string) error {
 		return errors.New("need to specify service name and plan url")
 	}
 
-	serviceName := args[0]
-	if !names.IsValidService(serviceName) {
-		return errors.Errorf("invalid service name %q", serviceName)
+	applicationName := args[0]
+	if !names.IsValidApplication(applicationName) {
+		return errors.Errorf("invalid service name %q", applicationName)
 	}
 
 	c.Plan = args[1]
-	c.Service = serviceName
+	c.Application = applicationName
 
 	return c.ModelCommandBase.Init(args[2:])
 }
 
 func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *cmd.Context) ([]byte, error) {
 	envUUID := client.ModelUUID()
-	charmURL, err := client.GetCharmURL(c.Service)
+	charmURL, err := client.GetCharmURL(c.Application)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -100,7 +100,7 @@ func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *c
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	m, err := authClient.Authorize(envUUID, charmURL.String(), c.Service, c.Plan, hc.VisitWebPage)
+	m, err := authClient.Authorize(envUUID, charmURL.String(), c.Application, c.Plan, hc.VisitWebPage)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -119,7 +119,7 @@ func (c *setPlanCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-	err = client.SetMetricCredentials(c.Service, credentials)
+	err = client.SetMetricCredentials(c.Application, credentials)
 	if err != nil {
 		return errors.Trace(err)
 	}

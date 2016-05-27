@@ -7,8 +7,8 @@ package plan
 
 import (
 	"github.com/juju/errors"
-	"github.com/juju/names"
 	"github.com/juju/utils"
+	"gopkg.in/juju/names.v2"
 )
 
 // Plan structure is used as a wire format to store information on ISV-created
@@ -36,7 +36,7 @@ func (s AuthorizationRequest) Validate() error {
 	if s.ServiceName == "" {
 		return errors.New("undefined service name")
 	}
-	if !names.IsValidService(s.ServiceName) {
+	if !names.IsValidApplication(s.ServiceName) {
 		return errors.Errorf("invalid service name: %q", s.ServiceName)
 	}
 	if s.CharmURL == "" {
