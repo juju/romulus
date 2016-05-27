@@ -66,16 +66,16 @@ func (s *setPlanCommandSuite) SetUpTest(c *gc.C) {
 
 func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 	tests := []struct {
-		about    string
-		plan     string
-		service  string
-		err      string
-		apiErr   error
-		apiCalls []testing.StubCall
+		about       string
+		plan        string
+		application string
+		err         string
+		apiErr      error
+		apiCalls    []testing.StubCall
 	}{{
-		about:   "all is well",
-		plan:    "bob/default",
-		service: "mysql",
+		about:       "all is well",
+		plan:        "bob/default",
+		application: "mysql",
 		apiCalls: []testing.StubCall{{
 			FuncName: "Authorize",
 			Args: []interface{}{
@@ -85,21 +85,21 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 			},
 		}},
 	}, {
-		about:   "invalid service name",
-		plan:    "bob/default",
-		service: "mysql-0",
-		err:     "invalid service name \"mysql-0\"",
+		about:       "invalid service name",
+		plan:        "bob/default",
+		application: "mysql-0",
+		err:         "invalid service name \"mysql-0\"",
 	}, {
-		about:   "unknown service",
-		plan:    "bob/default",
-		service: "wordpress",
-		err:     "service \"wordpress\" not found.*",
+		about:       "unknown service",
+		plan:        "bob/default",
+		application: "wordpress",
+		err:         "service \"wordpress\" not found.*",
 	}, {
-		about:   "unknown service",
-		plan:    "bob/default",
-		service: "mysql",
-		apiErr:  errors.New("some strange error"),
-		err:     "some strange error",
+		about:       "unknown service",
+		plan:        "bob/default",
+		application: "mysql",
+		apiErr:      errors.New("some strange error"),
+		err:         "some strange error",
 	},
 	}
 	for i, test := range tests {
@@ -108,7 +108,7 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 		if test.apiErr != nil {
 			s.mockAPI.SetErrors(test.apiErr)
 		}
-		_, err := cmdtesting.RunCommand(c, setplan.NewSetPlanCommand(), test.service, test.plan)
+		_, err := cmdtesting.RunCommand(c, setplan.NewSetPlanCommand(), test.application, test.plan)
 		if test.err == "" {
 			c.Assert(err, jc.ErrorIsNil)
 			c.Assert(s.mockAPI.Calls(), gc.HasLen, 1)

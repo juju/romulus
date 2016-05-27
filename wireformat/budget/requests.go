@@ -108,9 +108,9 @@ func (r CreateAllocationRequest) Body() interface{} { return r }
 // UpdateAllocationRequest defines a request to update an allocation
 // associated with a service.
 type UpdateAllocationRequest struct {
-	Model   string `json:"-"`
-	Service string `json:"-"`
-	Limit   string `json:"limit"`
+	Model       string `json:"-"`
+	Application string `json:"-"`
+	Limit       string `json:"limit"`
 }
 
 // ContentType return the content-type header to be set for the request.
@@ -118,7 +118,7 @@ func (UpdateAllocationRequest) ContentType() string { return "application/json+p
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/application/%s/allocation", BaseURL, r.Model, r.Application)
 }
 
 // Method returns the method for the request.
@@ -134,13 +134,13 @@ func (r UpdateAllocationRequest) Body() interface{} {
 // DeleteAllocationRequwest defines a request that removes an allocation associated
 // with a service.
 type DeleteAllocationRequest struct {
-	Model   string `json:"-"`
-	Service string `json:"-"`
+	Model       string `json:"-"`
+	Application string `json:"-"`
 }
 
 // URL returns the URL for the request.
 func (r DeleteAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Service)
+	return fmt.Sprintf("%s/model/%s/application/%s/allocation", BaseURL, r.Model, r.Application)
 }
 
 // Method returns the method for the request.
