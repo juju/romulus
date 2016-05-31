@@ -85,17 +85,17 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 			},
 		}},
 	}, {
-		about:       "invalid service name",
+		about:       "invalid application name",
 		plan:        "bob/default",
 		application: "mysql-0",
-		err:         "invalid service name \"mysql-0\"",
+		err:         "invalid application name \"mysql-0\"",
 	}, {
-		about:       "unknown service",
+		about:       "unknown application",
 		plan:        "bob/default",
 		application: "wordpress",
-		err:         "service \"wordpress\" not found.*",
+		err:         "application \"wordpress\" not found.*",
 	}, {
-		about:       "unknown service",
+		about:       "unknown application",
 		plan:        "bob/default",
 		application: "mysql",
 		apiErr:      errors.New("some strange error"),
@@ -114,9 +114,9 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 			c.Assert(s.mockAPI.Calls(), gc.HasLen, 1)
 			s.mockAPI.CheckCalls(c, test.apiCalls)
 
-			svc, err := s.State.Service("mysql")
+			app, err := s.State.Application("mysql")
 			c.Assert(err, jc.ErrorIsNil)
-			svcMacaroon := svc.MetricCredentials()
+			svcMacaroon := app.MetricCredentials()
 			data, err := json.Marshal(macaroon.Slice{s.mockAPI.macaroon})
 			c.Assert(err, jc.ErrorIsNil)
 			c.Assert(svcMacaroon, gc.DeepEquals, data)
@@ -129,7 +129,7 @@ func (s setPlanCommandSuite) TestSetPlanCommand(c *gc.C) {
 
 func (s *setPlanCommandSuite) TestNoArgs(c *gc.C) {
 	_, err := cmdtesting.RunCommand(c, setplan.NewSetPlanCommand())
-	c.Assert(err, gc.ErrorMatches, "need to specify service name and plan url")
+	c.Assert(err, gc.ErrorMatches, "need to specify application name and plan url")
 }
 
 func newMockAPI() (*mockapi, error) {
@@ -156,19 +156,19 @@ type mockapi struct {
 	macaroon *macaroon.Macaroon
 }
 
-func (m *mockapi) Authorize(environmentUUID, charmURL, serviceName, plan string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error) {
+func (m *mockapi) Authorize(modelUUID, charmURL, applicationName, plan string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error) {
 	err := m.NextErr()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	m.AddCall("Authorize", environmentUUID, charmURL, serviceName)
+	m.AddCall("Authorize", modelUUID, charmURL, applicationName)
 	macaroon, err := m.service.NewMacaroon(
 		"",
 		nil,
 		[]checkers.Caveat{
-			checkers.DeclaredCaveat("environment", environmentUUID),
+			checkers.DeclaredCaveat("environment", modelUUID),
 			checkers.DeclaredCaveat("charm", charmURL),
-			checkers.DeclaredCaveat("service", serviceName),
+			checkers.DeclaredCaveat("service", applicationName),
 			checkers.DeclaredCaveat("plan", plan),
 		},
 	)
