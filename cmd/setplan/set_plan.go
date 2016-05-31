@@ -11,7 +11,7 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/juju/api/service"
+	"github.com/juju/juju/api/application"
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/juju/names.v2"
 	"gopkg.in/macaroon.v1"
@@ -23,8 +23,8 @@ import (
 // the comand uses to create an authorization macaroon.
 type authorizationClient interface {
 	// Authorize returns the authorization macaroon for the specified environment,
-	// charm url, service name and plan.
-	Authorize(environmentUUID, charmURL, serviceName, plan string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error)
+	// charm url, application name and plan.
+	Authorize(environmentUUID, charmURL, applicationName, plan string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error)
 }
 
 var newAuthorizationClient = func(options ...api.ClientOption) (authorizationClient, error) {
@@ -32,13 +32,13 @@ var newAuthorizationClient = func(options ...api.ClientOption) (authorizationCli
 }
 
 // NewSetPlanCommand returns a new command that is used to set metric credentials for a
-// deployed service.
+// deployed application.
 func NewSetPlanCommand() cmd.Command {
 	return modelcmd.Wrap(&setPlanCommand{})
 }
 
 // setPlanCommand is a command-line tool for setting
-// Service.MetricCredential for development & demonstration purposes.
+// Application.MetricCredential for development & demonstration purposes.
 type setPlanCommand struct {
 	modelcmd.ModelCommandBase
 
@@ -50,16 +50,16 @@ type setPlanCommand struct {
 func (c *setPlanCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "set-plan",
-		Args:    "<service name> <plan>",
-		Purpose: "set the plan for a service",
+		Args:    "<application name> <plan>",
+		Purpose: "set the plan for an application",
 		Doc: `
-Set the plan for the deployed service, effective immediately.
+Set the plan for the deployed application, effective immediately.
 
 The specified plan name must be a valid plan that is offered for this particular charm. Use "juju list-plans <charm>" for more information.
 	
 Usage:
 
- juju set-plan [options] <service name> <plan name>
+ juju set-plan [options] <application name> <plan name>
 
 Example:
 
@@ -71,12 +71,12 @@ Example:
 // Init implements cmd.Command.
 func (c *setPlanCommand) Init(args []string) error {
 	if len(args) < 2 {
-		return errors.New("need to specify service name and plan url")
+		return errors.New("need to specify application name and plan url")
 	}
 
 	applicationName := args[0]
 	if !names.IsValidApplication(applicationName) {
-		return errors.Errorf("invalid service name %q", applicationName)
+		return errors.Errorf("invalid application name %q", applicationName)
 	}
 
 	c.Plan = args[1]
@@ -85,7 +85,7 @@ func (c *setPlanCommand) Init(args []string) error {
 	return c.ModelCommandBase.Init(args[2:])
 }
 
-func (c *setPlanCommand) requestMetricCredentials(client *service.Client, ctx *cmd.Context) ([]byte, error) {
+func (c *setPlanCommand) requestMetricCredentials(client *application.Client, ctx *cmd.Context) ([]byte, error) {
 	envUUID := client.ModelUUID()
 	charmURL, err := client.GetCharmURL(c.Application)
 	if err != nil {
@@ -114,7 +114,7 @@ func (c *setPlanCommand) Run(ctx *cmd.Context) error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-	client := service.NewClient(root)
+	client := application.NewClient(root)
 	credentials, err := c.requestMetricCredentials(client, ctx)
 	if err != nil {
 		return errors.Trace(err)
