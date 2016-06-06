@@ -222,6 +222,7 @@ func printTerms(ctx *cmd.Context, terms []terms.GetTermsResponse) error {
 	}
 	buffer := bytes.NewReader([]byte(output))
 	less := exec.Command("less")
+	less.Args = []string{"less", "-P", "Press 'q' to quit after you've read the terms."}
 	less.Stdout = ctx.Stdout
 	less.Stdin = buffer
 	err := less.Run()
