@@ -28,7 +28,7 @@ type TermsServiceClient interface {
 }
 
 const listAgreementsDoc = `
-list-agreements is used to list terms the user has agreed to.
+List terms the user has agreed to.
 `
 
 // NewListAgreementsCommand returns a new command that can be
@@ -62,9 +62,10 @@ func (c *listAgreementsCommand) SetFlags(f *gnuflag.FlagSet) {
 // Info implements Command.Info.
 func (c *listAgreementsCommand) Info() *cmd.Info {
 	return &cmd.Info{
-		Name:    "list-agreements",
+		Name:    "agreements",
 		Purpose: "list user's agreements",
 		Doc:     listAgreementsDoc,
+		Aliases: []string{"list-agreements"},
 	}
 }
 

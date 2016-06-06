@@ -33,14 +33,14 @@ func (s *commandSuite) TestRegister(c *gc.C) {
 	commands.RegisterAll(m)
 	c.Assert(m.commands, gc.DeepEquals, []string{
 		"agree",
+		"agreements",
 		"allocate",
+		"budgets",
 		"create-budget",
-		"list-budgets",
-		"list-plans",
+		"plans",
 		"set-budget",
 		"set-plan",
 		"show-budget",
 		"update-allocation",
-		"list-agreements",
 	})
 }

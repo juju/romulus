@@ -39,13 +39,13 @@ func RegisterAll(r commandRegister) {
 
 	}
 	register(agree.NewAgreeCommand())
+	register(listagreements.NewListAgreementsCommand())
 	register(allocate.NewAllocateCommand())
-	register(createbudget.NewCreateBudgetCommand())
 	register(listbudgets.NewListBudgetsCommand())
+	register(createbudget.NewCreateBudgetCommand())
 	register(listplans.NewListPlansCommand())
 	register(setbudget.NewSetBudgetCommand())
 	register(setplan.NewSetPlanCommand())
 	register(showbudget.NewShowBudgetCommand())
 	register(updateallocation.NewUpdateAllocationCommand())
-	register(listagreements.NewListAgreementsCommand())
 }
