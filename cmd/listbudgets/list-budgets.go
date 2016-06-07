@@ -33,15 +33,16 @@ const listBudgetsDoc = `
 List the available budgets.
 
 Example:
- juju list-budgets
+ juju budgets
 `
 
 // Info implements cmd.Command.Info.
 func (c *listBudgetsCommand) Info() *cmd.Info {
 	return &cmd.Info{
-		Name:    "list-budgets",
+		Name:    "budgets",
 		Purpose: "list budgets",
 		Doc:     listBudgetsDoc,
+		Aliases: []string{"list-budgets"},
 	}
 }
 

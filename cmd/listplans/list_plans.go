@@ -40,7 +40,7 @@ const listPlansDoc = `
 List plans available for the specified charm.
 
 Example:
- juju list-plans cs:webapp
+ juju plans cs:webapp
 `
 
 // ListPlansCommand retrieves plans that are available for the specified charm
@@ -63,10 +63,11 @@ func NewListPlansCommand() modelcmd.CommandBase {
 // Info implements Command.Info.
 func (c *ListPlansCommand) Info() *cmd.Info {
 	return &cmd.Info{
-		Name:    "list-plans",
+		Name:    "plans",
 		Args:    "",
 		Purpose: "list plans",
 		Doc:     listPlansDoc,
+		Aliases: []string{"list-plans"},
 	}
 }
 
