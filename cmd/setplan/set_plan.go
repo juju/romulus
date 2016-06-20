@@ -51,19 +51,15 @@ func (c *setPlanCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "set-plan",
 		Args:    "<application name> <plan>",
-		Purpose: "set the plan for an application",
+		Purpose: "Set the plan for an application.",
 		Doc: `
 Set the plan for the deployed application, effective immediately.
 
-The specified plan name must be a valid plan that is offered for this particular charm. Use "juju list-plans <charm>" for more information.
-	
-Usage:
+The specified plan name must be a valid plan that is offered for this
+particular charm. Use "juju list-plans <charm>" for more information.
 
- juju set-plan [options] <application name> <plan name>
-
-Example:
-
- juju set-plan myapp example/uptime
+Examples:
+    juju set-plan myapp example/uptime
 `,
 	}
 }

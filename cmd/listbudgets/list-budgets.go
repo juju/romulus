@@ -32,15 +32,15 @@ type listBudgetsCommand struct {
 const listBudgetsDoc = `
 List the available budgets.
 
-Example:
- juju budgets
+Examples:
+    juju budgets
 `
 
 // Info implements cmd.Command.Info.
 func (c *listBudgetsCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "budgets",
-		Purpose: "list budgets",
+		Purpose: "List budgets.",
 		Doc:     listBudgetsDoc,
 		Aliases: []string{"list-budgets"},
 	}

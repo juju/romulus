@@ -39,8 +39,8 @@ var newClient = func(client *httpbakery.Client) (apiClient, error) {
 const listPlansDoc = `
 List plans available for the specified charm.
 
-Example:
- juju plans cs:webapp
+Examples:
+    juju plans cs:webapp
 `
 
 // ListPlansCommand retrieves plans that are available for the specified charm
@@ -65,7 +65,7 @@ func (c *ListPlansCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "plans",
 		Args:    "",
-		Purpose: "list plans",
+		Purpose: "List plans.",
 		Doc:     listPlansDoc,
 		Aliases: []string{"list-plans"},
 	}

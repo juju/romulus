@@ -101,27 +101,27 @@ func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
 	}{{
 		about:         "no args",
 		args:          []string{},
-		expectedError: "budget and service name required",
+		expectedError: "budget and application name required",
 	}, {
 		about:         "budget without allocation limit",
 		args:          []string{"name", "db"},
-		expectedError: `expected args in the form "budget:limit \[service ...\]": invalid budget specification, expecting <budget>:<limit>`,
+		expectedError: `expected args in the form "budget:limit \[application ...\]": invalid budget specification, expecting <budget>:<limit>`,
 	}, {
-		about:         "service not specified",
+		about:         "application not specified",
 		args:          []string{"name:100"},
-		expectedError: "budget and service name required",
+		expectedError: "budget and application name required",
 	}, {
 		about:         "negative allocation limit",
 		args:          []string{"name:-100", "db"},
-		expectedError: `expected args in the form "budget:limit \[service ...\]": invalid budget specification, expecting <budget>:<limit>`,
+		expectedError: `expected args in the form "budget:limit \[application ...\]": invalid budget specification, expecting <budget>:<limit>`,
 	}, {
 		about:         "non-numeric allocation limit",
 		args:          []string{"name:abcd", "db"},
-		expectedError: `expected args in the form "budget:limit \[service ...\]": invalid budget specification, expecting <budget>:<limit>`,
+		expectedError: `expected args in the form "budget:limit \[application ...\]": invalid budget specification, expecting <budget>:<limit>`,
 	}, {
 		about:         "empty allocation limit",
 		args:          []string{"name:", "db"},
-		expectedError: `expected args in the form "budget:limit \[service ...\]": invalid budget specification, expecting <budget>:<limit>`,
+		expectedError: `expected args in the form "budget:limit \[application ...\]": invalid budget specification, expecting <budget>:<limit>`,
 	}, {
 		about:         "invalid model UUID",
 		args:          []string{"--model-uuid", "nope", "name:100", "db"},
@@ -129,7 +129,7 @@ func (s *allocateSuite) TestAllocateErrors(c *gc.C) {
 	}, {
 		about:         "arguments in wrong order",
 		args:          []string{"name:", "db:50"},
-		expectedError: `expected args in the form "budget:limit \[service ...\]": invalid budget specification, expecting <budget>:<limit>`,
+		expectedError: `expected args in the form "budget:limit \[application ...\]": invalid budget specification, expecting <budget>:<limit>`,
 	}}
 	for i, test := range tests {
 		c.Logf("test %d: %s", i, test.about)
