@@ -41,18 +41,19 @@ type apiClient interface {
 }
 
 const doc = `
-Updates an existing allocation on a service.
+Updates an existing allocation on an application.
 
-Example:
- juju update-allocation wordpress 10
-     Sets the allocation for the wordpress service to 10.
+Examples:
+    # Sets the allocation for the wordpress application to 10.
+    juju update-allocation wordpress 10
 `
 
 // Info implements cmd.Command.Info.
 func (c *updateAllocationCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "update-allocation",
-		Purpose: "update an allocation",
+		Args:    "<application> <value>",
+		Purpose: "Update an allocation.",
 		Doc:     doc,
 	}
 }
@@ -60,7 +61,7 @@ func (c *updateAllocationCommand) Info() *cmd.Info {
 // Init implements cmd.Command.Init.
 func (c *updateAllocationCommand) Init(args []string) error {
 	if len(args) < 2 {
-		return errors.New("service and value required")
+		return errors.New("application and value required")
 	}
 	c.Name, c.Value = args[0], args[1]
 	if _, err := strconv.ParseInt(c.Value, 10, 32); err != nil {

@@ -36,37 +36,33 @@ func NewAllocateCommand() modelcmd.ModelCommand {
 }
 
 const doc = `
-Allocate budget for the specified services, replacing any prior allocations
-made for the specified services.
+Allocate budget for the specified applications, replacing any prior allocations
+made for the specified applications.
 
-Usage:
+Examples:
+    # Assigns application "db" to an allocation on budget "somebudget" with
+    # the limit "42".
+    juju allocate somebudget:42 db
 
- juju allocate <budget>:<value> <service> [<service2> ...]
+    # Application names assume the current selected model, unless otherwise
+    # specified with:
+    juju allocate -m [<controller name:]<model name> ...
 
-Example:
-
- juju allocate somebudget:42 db
-     Assigns application "db" to an allocation on budget "somebudget" with the limit "42".
-
-Service names assume the current selected model, unless otherwise specified with:
-
- juju allocate -m [<controller name:]<model name> ...
-
-Models may also be referenced by UUID when necessary:
-
- juju allocate --model-uuid <uuid> ...
+    # Models may also be referenced by UUID when necessary:
+     juju allocate --model-uuid <uuid> ...
 `
 
 // SetFlags implements cmd.Command.SetFlags.
 func (c *allocateCommand) SetFlags(f *gnuflag.FlagSet) {
-	f.StringVar(&c.ModelUUID, "model-uuid", "", "Model UUID of allocation.")
+	f.StringVar(&c.ModelUUID, "model-uuid", "", "Model UUID of allocation")
 }
 
 // Info implements cmd.Command.Info.
 func (c *allocateCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "allocate",
-		Purpose: "allocate budget to services",
+		Args:    "<budget>:<value> <application> [<application2> ...]",
+		Purpose: "Allocate budget to applications.",
 		Doc:     doc,
 	}
 }
@@ -74,13 +70,13 @@ func (c *allocateCommand) Info() *cmd.Info {
 // Init implements cmd.Command.Init.
 func (c *allocateCommand) Init(args []string) error {
 	if len(args) < 2 {
-		return errors.New("budget and service name required")
+		return errors.New("budget and application name required")
 	}
 	budgetWithLimit := args[0]
 	var err error
 	c.Budget, c.Limit, err = parseBudgetWithLimit(budgetWithLimit)
 	if err != nil {
-		return errors.Annotate(err, `expected args in the form "budget:limit [service ...]"`)
+		return errors.Annotate(err, `expected args in the form "budget:limit [application ...]"`)
 	}
 	if c.ModelUUID == "" {
 		c.ModelUUID, err = c.modelUUID()

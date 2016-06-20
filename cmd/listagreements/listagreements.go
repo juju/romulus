@@ -63,7 +63,7 @@ func (c *listAgreementsCommand) SetFlags(f *gnuflag.FlagSet) {
 func (c *listAgreementsCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "agreements",
-		Purpose: "list user's agreements",
+		Purpose: "List user's agreements.",
 		Doc:     listAgreementsDoc,
 		Aliases: []string{"list-agreements"},
 	}

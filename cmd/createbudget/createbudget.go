@@ -29,16 +29,16 @@ func NewCreateBudgetCommand() cmd.Command {
 const doc = `
 Create a new budget with monthly limit.
 
-Example:
- juju create-budget qa 42
-     Creates a budget named 'qa' with a limit of 42.
+Examples:
+    # Creates a budget named 'qa' with a limit of 42.
+    juju create-budget qa 42
 `
 
 // Info implements cmd.Command.Info.
 func (c *createBudgetCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "create-budget",
-		Purpose: "create a new budget",
+		Purpose: "Create a new budget.",
 		Doc:     doc,
 	}
 }

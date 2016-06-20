@@ -33,14 +33,15 @@ view the terms and agree to them. Then the charm may be deployed.
 Once you have agreed to terms, you will not be prompted to view them again.
 
 Examples:
+    # Displays terms for somePlan revision 1 and prompts for agreement.
+    juju agree somePlan/1
 
- juju agree somePlan/1
-     Displays terms for somePlan revision 1 and prompts for agreement.
- juju agree somePlan/1 otherPlan/2
-     Displays the terms for revision 1 of somePlan, revision 2 of otherPlan,
-     and prompts for agreement.
- juju agree somePlan/1 otherPlan/2 --yes
-     Agrees to the terms without prompting.
+    # Displays the terms for revision 1 of somePlan, revision 2 of otherPlan,
+    # and prompts for agreement.
+    juju agree somePlan/1 otherPlan/2
+
+    # Agrees to the terms without prompting.
+    juju agree somePlan/1 otherPlan/2 --yes
 `
 
 // NewAgreeCommand returns a new command that can be
@@ -66,7 +67,7 @@ type agreeCommand struct {
 
 // SetFlags implements Command.SetFlags.
 func (c *agreeCommand) SetFlags(f *gnuflag.FlagSet) {
-	f.BoolVar(&c.SkipTermContent, "yes", false, "agree to terms non interactively")
+	f.BoolVar(&c.SkipTermContent, "yes", false, "Agree to terms non interactively")
 	c.out.AddFlags(f, "json", cmd.DefaultFormatters)
 }
 
@@ -75,7 +76,7 @@ func (c *agreeCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "agree",
 		Args:    "<term>",
-		Purpose: "agree to terms",
+		Purpose: "Agree to terms.",
 		Doc:     agreeDoc,
 	}
 }

@@ -93,12 +93,12 @@ func (s *updateAllocationSuite) TestUpdateAllocationErrors(c *gc.C) {
 		{
 			about:         "value is missing",
 			args:          []string{"name"},
-			expectedError: "service and value required",
+			expectedError: "application and value required",
 		},
 		{
 			about:         "no args",
 			args:          []string{},
-			expectedError: "service and value required",
+			expectedError: "application and value required",
 		},
 	}
 	for i, test := range tests {

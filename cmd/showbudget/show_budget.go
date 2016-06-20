@@ -39,15 +39,16 @@ type showBudgetCommand struct {
 const showBudgetDoc = `
 Display budget usage information.
 
-Example:
- juju show-budget personal
+Examples:
+    juju show-budget personal
 `
 
 // Info implements cmd.Command.Info.
 func (c *showBudgetCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "show-budget",
-		Purpose: "show budget usage",
+		Args:    "<budget>",
+		Purpose: "Show details about a budget.",
 		Doc:     showBudgetDoc,
 	}
 }

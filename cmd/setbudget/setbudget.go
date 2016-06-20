@@ -29,16 +29,17 @@ func NewSetBudgetCommand() cmd.Command {
 const doc = `
 Set the monthly budget limit.
 
-Example:
- juju set-budget personal 96
-     Sets the monthly limit for budget named 'personal' to 96.
+Examples:
+    # Sets the monthly limit for budget named 'personal' to 96.
+    juju set-budget personal 96
 `
 
 // Info implements cmd.Command.Info.
 func (c *setBudgetCommand) Info() *cmd.Info {
 	return &cmd.Info{
 		Name:    "set-budget",
-		Purpose: "set the budget limit",
+		Args:    "<budget name> <value>",
+		Purpose: "Set the budget limit.",
 		Doc:     doc,
 	}
 }
