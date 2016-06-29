@@ -6,6 +6,7 @@
 package budget
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -54,6 +55,25 @@ type Allocation struct {
 	Usage    string                       `json:"usage"`
 	Model    string                       `json:"model"`
 	Services map[string]ServiceAllocation `json:"services"`
+}
+
+type allocationV1 Allocation
+
+// UnmarshalJSON implements a transitional json.Unmarshaler to allow
+// forward-compatible processing of fields renamed in Juju 2.0.
+func (a *Allocation) UnmarshalJSON(data []byte) error {
+	v := struct {
+		allocationV1
+		Applications map[string]ServiceAllocation `json:"applications"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*a = Allocation(v.allocationV1)
+	if a.Services == nil {
+		a.Services = v.Applications
+	}
+	return nil
 }
 
 // SortableKey returns a key by which allocations can be sorted.

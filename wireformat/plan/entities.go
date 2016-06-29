@@ -6,6 +6,8 @@
 package plan
 
 import (
+	"encoding/json"
+
 	"github.com/juju/errors"
 	"github.com/juju/utils"
 	"gopkg.in/juju/names.v2"
@@ -22,10 +24,33 @@ type Plan struct {
 
 // AuthorizationRequest defines the struct used to request a plan authorization.
 type AuthorizationRequest struct {
-	EnvironmentUUID string `json:"env-uuid"` // TODO(cmars): rename to EnvUUID
+	EnvironmentUUID string `json:"env-uuid"`
 	CharmURL        string `json:"charm-url"`
 	ServiceName     string `json:"service-name"`
 	PlanURL         string `json:"plan-url"`
+}
+
+type authorizationRequestV1 AuthorizationRequest
+
+// UnmarshalJSON implements a transitional json.Unmarshaler to allow
+// forward-compatible processing of fields renamed in Juju 2.0.
+func (ar *AuthorizationRequest) UnmarshalJSON(data []byte) error {
+	v := struct {
+		authorizationRequestV1
+		ModelUUID       string `json:"model-uuid"`
+		ApplicationName string `json:"application-name"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*ar = AuthorizationRequest(v.authorizationRequestV1)
+	if ar.EnvironmentUUID == "" {
+		ar.EnvironmentUUID = v.ModelUUID
+	}
+	if ar.ServiceName == "" {
+		ar.ServiceName = v.ApplicationName
+	}
+	return nil
 }
 
 // Validate checks the AuthorizationRequest for errors.
