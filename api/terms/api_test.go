@@ -13,6 +13,7 @@ import (
 	stdtesting "testing"
 	"time"
 
+	"github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
@@ -127,12 +128,86 @@ func (s *apiSuite) TestNoFoundReturnsError(c *gc.C) {
 	c.Assert(err, gc.ErrorMatches, "failed to get unsigned terms: Not Found: something failed")
 }
 
+func (s *apiSuite) TestSignedAgreementsEnvTermsURL(c *gc.C) {
+	cleanup := testing.PatchEnvironment("JUJU_TERMS", "http://example.com")
+	defer cleanup()
+
+	t := time.Now().UTC()
+	s.httpClient.status = http.StatusOK
+	s.httpClient.SetBody(c, []terms.AgreementResponse{
+		{
+			User:      "test-user",
+			Term:      "hello-world-terms",
+			Revision:  1,
+			CreatedOn: t,
+		},
+		{
+			User:      "test-user",
+			Term:      "hello-universe-terms",
+			Revision:  42,
+			CreatedOn: t,
+		},
+	})
+	_, err := s.client.GetUsersAgreements()
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(s.httpClient.Calls(), gc.HasLen, 1)
+	s.httpClient.CheckCall(c, 0, "Do", "http://example.com/agreements")
+}
+
+func (s *apiSuite) TestUnsignedTermsEnvTermsURL(c *gc.C) {
+	cleanup := testing.PatchEnvironment("JUJU_TERMS", "http://example.com")
+	defer cleanup()
+
+	s.httpClient.status = http.StatusOK
+	s.httpClient.SetBody(c, []terms.GetTermsResponse{
+		{
+			Name:     "hello-world-terms",
+			Revision: 1,
+			Content:  "terms doc content",
+		},
+		{
+			Name:     "hello-universe-terms",
+			Revision: 1,
+			Content:  "universal terms doc content",
+		},
+	})
+	_, err := s.client.GetUnsignedTerms(&terms.CheckAgreementsRequest{
+		Terms: []string{
+			"hello-world-terms/1",
+			"hello-universe-terms/1",
+		},
+	})
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(s.httpClient.Calls(), gc.HasLen, 1)
+	s.httpClient.CheckCall(c, 0, "Do", "http://example.com/agreement?Terms=hello-world-terms%2F1&Terms=hello-universe-terms%2F1")
+	s.httpClient.ResetCalls()
+}
+
+func (s *apiSuite) TestSaveAgreementEnvTermsURL(c *gc.C) {
+	cleanup := testing.PatchEnvironment("JUJU_TERMS", "http://example.com")
+	defer cleanup()
+
+	s.httpClient.status = http.StatusOK
+	s.httpClient.SetBody(c, terms.SaveAgreementResponses{})
+	p1 := &terms.SaveAgreements{
+		Agreements: []terms.SaveAgreement{{
+			TermName:     "hello-world-terms",
+			TermRevision: 1,
+		}}}
+	_, err := s.client.SaveAgreement(p1)
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(s.httpClient.Calls(), gc.HasLen, 1)
+	s.httpClient.CheckCall(c, 0, "DoWithBody", "http://example.com/agreement")
+}
+
 type mockHttpClient struct {
+	testing.Stub
 	status int
 	body   []byte
 }
 
 func (m *mockHttpClient) Do(req *http.Request) (*http.Response, error) {
+	m.AddCall("Do", req.URL.String())
 	return &http.Response{
 		Status:     http.StatusText(m.status),
 		StatusCode: m.status,
@@ -144,6 +219,7 @@ func (m *mockHttpClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func (m *mockHttpClient) DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Response, error) {
+	m.AddCall("DoWithBody", req.URL.String())
 	return &http.Response{
 		Status:     http.StatusText(m.status),
 		StatusCode: m.status,

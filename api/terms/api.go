@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/juju/errors"
@@ -113,13 +114,21 @@ func NewClient(options ...ClientOption) (Client, error) {
 	return c, nil
 }
 
+func getBaseURL() string {
+	baseURL := BaseURL
+	if termsURL := os.Getenv("JUJU_TERMS"); termsURL != "" {
+		baseURL = termsURL
+	}
+	return baseURL
+}
+
 // GetUnsignedTerms returns the default plan for the specified charm.
 func (c *client) GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse, error) {
 	values := url.Values{}
 	for _, t := range p.Terms {
 		values.Add("Terms", t)
 	}
-	u := fmt.Sprintf("%s/agreement?%s", BaseURL, values.Encode())
+	u := fmt.Sprintf("%s/agreement?%s", getBaseURL(), values.Encode())
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -148,7 +157,7 @@ func (c *client) GetUnsignedTerms(p *CheckAgreementsRequest) ([]GetTermsResponse
 
 // SaveAgreements saves a user agreement to the specificed terms document.
 func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, error) {
-	u := fmt.Sprintf("%s/agreement", BaseURL)
+	u := fmt.Sprintf("%s/agreement", getBaseURL())
 	req, err := http.NewRequest("POST", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -181,7 +190,7 @@ func (c *client) SaveAgreement(p *SaveAgreements) (*SaveAgreementResponses, erro
 
 // GetUsersAgreements returns all agreements the user has made.
 func (c *client) GetUsersAgreements() ([]AgreementResponse, error) {
-	u := fmt.Sprintf("%s/agreements", BaseURL)
+	u := fmt.Sprintf("%s/agreements", getBaseURL())
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
