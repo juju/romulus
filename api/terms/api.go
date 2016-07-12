@@ -30,6 +30,7 @@ type CheckAgreementsRequest struct {
 // GetTermsResponse holds the response of the GetTerms call.
 type GetTermsResponse struct {
 	Name      string    `json:"name"`
+	Owner     string    `json:"owner"`
 	Title     string    `json:"title"`
 	Revision  int       `json:"revision"`
 	CreatedOn time.Time `json:"created-on"`
@@ -61,6 +62,7 @@ type SaveAgreements struct {
 // SaveAgreement holds the parameters for creating a new
 // user agreement to a specific revision of terms.
 type SaveAgreement struct {
+	TermOwner    string `json:"termowner"`
 	TermName     string `json:"termname"`
 	TermRevision int    `json:"termrevision"`
 }

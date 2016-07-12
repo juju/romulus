@@ -51,6 +51,7 @@ func NewAgreeCommand() cmd.Command {
 }
 
 type term struct {
+	owner    string
 	name     string
 	revision int
 }
@@ -88,14 +89,14 @@ func (c *agreeCommand) Init(args []string) error {
 	}
 
 	for _, t := range args {
-		name, rev, err := parseTermRevision(t)
+		owner, name, rev, err := parseTermRevision(t)
 		if err != nil {
 			return errors.Annotate(err, "invalid term format")
 		}
 		if rev == 0 {
 			return errors.Errorf("must specify a valid term revision %q", t)
 		}
-		c.terms = append(c.terms, term{name, rev})
+		c.terms = append(c.terms, term{owner, name, rev})
 		c.termIds = append(c.termIds, t)
 	}
 	if len(c.terms) == 0 {
@@ -150,7 +151,7 @@ func (c *agreeCommand) Run(ctx *cmd.Context) error {
 
 	agreedTerms := make([]term, len(needAgreement))
 	for i, t := range needAgreement {
-		agreedTerms[i] = term{name: t.Name, revision: t.Revision}
+		agreedTerms[i] = term{owner: t.Owner, name: t.Name, revision: t.Revision}
 	}
 
 	answer = strings.TrimSpace(answer)
@@ -171,6 +172,7 @@ func saveAgreements(ctx *cmd.Context, termsClient terms.Client, ts []term) error
 	agreements := make([]terms.SaveAgreement, len(ts))
 	for i, t := range ts {
 		agreements[i] = terms.SaveAgreement{
+			TermOwner:    t.owner,
 			TermName:     t.name,
 			TermRevision: t.revision,
 		}
@@ -192,24 +194,34 @@ var userAnswer = func() (string, error) {
 	return bufio.NewReader(os.Stdin).ReadString('\n')
 }
 
-func parseTermRevision(s string) (string, int, error) {
-	fail := func(err error) (string, int, error) {
-		return "", -1, err
+func parseTermRevision(s string) (string, string, int, error) {
+	fail := func(err error) (string, string, int, error) {
+		return "", "", -1, err
 	}
 	tokens := strings.Split(s, "/")
-	if len(tokens) == 1 {
-		return tokens[0], 0, nil
-	} else if len(tokens) > 2 {
+	termOwner := ""
+	termName := ""
+	revisionIndex := -1
+	switch len(tokens) {
+	case 1:
+		termName = tokens[0]
+		return termOwner, termName, 0, nil
+	case 2:
+		termName = tokens[0]
+		revisionIndex = 1
+	case 3:
+		termOwner = tokens[0]
+		termName = tokens[1]
+		revisionIndex = 2
+	default:
 		return fail(errors.New("unknown term revision format"))
 	}
 
-	termName := tokens[0]
-	termRevisionString := tokens[1]
-	termRevision, err := strconv.Atoi(termRevisionString)
+	termRevision, err := strconv.Atoi(tokens[revisionIndex])
 	if err != nil {
 		return fail(errors.Trace(err))
 	}
-	return termName, termRevision, nil
+	return termOwner, termName, termRevision, nil
 }
 
 func printTerms(ctx *cmd.Context, terms []terms.GetTermsResponse) error {
