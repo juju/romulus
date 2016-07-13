@@ -46,6 +46,16 @@ const (
     }
 ]
 `
+	expectedListAgreementsJSONOutputWithOwner = `[
+    {
+        "user": "test-user",
+        "owner": "owner",
+        "term": "test-term",
+        "revision": 1,
+        "created-on": "2015-12-25T00:00:00Z"
+    }
+]
+`
 )
 
 func (s *listAgreementsSuite) TestGetUsersAgreements(c *gc.C) {
@@ -78,6 +88,40 @@ func (s *listAgreementsSuite) TestGetUsersAgreements(c *gc.C) {
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(ctx, gc.NotNil)
 	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, "- user: test-user\n  term: test-term\n  revision: 1\n  createdon: 2015-12-25T00:00:00Z\n")
+	c.Assert(s.client.called, jc.IsTrue)
+}
+
+func (s *listAgreementsSuite) TestGetUsersAgreementsWithTermOwner(c *gc.C) {
+	ctx, err := cmdtesting.RunCommand(c, listagreements.NewListAgreementsCommand())
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, `[]
+`)
+	c.Assert(s.client.called, jc.IsTrue)
+
+	s.client.setError("well, this is embarassing")
+	ctx, err = cmdtesting.RunCommand(c, listagreements.NewListAgreementsCommand())
+	c.Assert(err, gc.ErrorMatches, "failed to list user agreements: well, this is embarassing")
+	c.Assert(s.client.called, jc.IsTrue)
+
+	agreements := []terms.AgreementResponse{{
+		User:      "test-user",
+		Owner:     "owner",
+		Term:      "test-term",
+		Revision:  1,
+		CreatedOn: time.Date(2015, 12, 25, 0, 0, 0, 0, time.UTC),
+	}}
+	s.client.setAgreements(agreements)
+
+	ctx, err = cmdtesting.RunCommand(c, listagreements.NewListAgreementsCommand())
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(ctx, gc.NotNil)
+	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, expectedListAgreementsJSONOutputWithOwner)
+	c.Assert(s.client.called, jc.IsTrue)
+
+	ctx, err = cmdtesting.RunCommand(c, listagreements.NewListAgreementsCommand(), "--format", "yaml")
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(ctx, gc.NotNil)
+	c.Assert(cmdtesting.Stdout(ctx), gc.Equals, "- user: test-user\n  owner: owner\n  term: test-term\n  revision: 1\n  createdon: 2015-12-25T00:00:00Z\n")
 	c.Assert(s.client.called, jc.IsTrue)
 }
 

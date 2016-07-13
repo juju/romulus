@@ -29,12 +29,12 @@ type CheckAgreementsRequest struct {
 
 // GetTermsResponse holds the response of the GetTerms call.
 type GetTermsResponse struct {
-	Name      string    `json:"name"`
-	Owner     string    `json:"owner"`
-	Title     string    `json:"title"`
-	Revision  int       `json:"revision"`
-	CreatedOn time.Time `json:"created-on"`
-	Content   string    `json:"content"`
+	Name      string    `json:"name" yaml:"name"`
+	Owner     string    `json:"owner,omitempty" yaml:"owner,omitempty"`
+	Title     string    `json:"title" yaml:"title"`
+	Revision  int       `json:"revision" yaml:"revision"`
+	CreatedOn time.Time `json:"created-on" yaml:"createdon"`
+	Content   string    `json:"content" yaml:"content"`
 }
 
 // SaveAgreementResponses holds the response of the SaveAgreement
@@ -47,10 +47,11 @@ type SaveAgreementResponses struct {
 // the user to a specific revision of terms and conditions
 // document.
 type AgreementResponse struct {
-	User      string    `json:"user"`
-	Term      string    `json:"term"`
-	Revision  int       `json:"revision"`
-	CreatedOn time.Time `json:"created-on"`
+	User      string    `json:"user" yaml:"user"`
+	Owner     string    `json:"owner,omitempty" yaml:"owner,omitempty"`
+	Term      string    `json:"term" yaml:"term"`
+	Revision  int       `json:"revision" yaml:"revision"`
+	CreatedOn time.Time `json:"created-on" yaml:"createdon"`
 }
 
 // SaveAgreements holds the parameters for creating new
