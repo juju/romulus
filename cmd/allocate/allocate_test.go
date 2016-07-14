@@ -32,24 +32,17 @@ func (s *allocateSuite) SetUpTest(c *gc.C) {
 		Controllers: map[string]jujuclient.ControllerDetails{
 			"controller": {},
 		},
-		Models: map[string]jujuclient.ControllerAccountModels{
+		Models: map[string]*jujuclient.ControllerModels{
 			"controller": {
-				AccountModels: map[string]*jujuclient.AccountModels{
-					"admin@local": {
-						Models: map[string]jujuclient.ModelDetails{
-							"model": {"model-uuid"},
-						},
-						CurrentModel: "model",
-					},
+				Models: map[string]jujuclient.ModelDetails{
+					"model": {"model-uuid"},
 				},
+				CurrentModel: "model",
 			},
 		},
-		Accounts: map[string]*jujuclient.ControllerAccounts{
+		Accounts: map[string]jujuclient.AccountDetails{
 			"controller": {
-				Accounts: map[string]jujuclient.AccountDetails{
-					"admin@local": {},
-				},
-				CurrentAccount: "admin@local",
+				User: "admin@local",
 			},
 		},
 	}
