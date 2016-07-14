@@ -112,7 +112,7 @@ func (c *allocateCommand) Run(ctx *cmd.Context) error {
 }
 
 func (c *allocateCommand) modelUUID() (string, error) {
-	model, err := c.ClientStore().ModelByName(c.ControllerName(), c.AccountName(), c.ModelName())
+	model, err := c.ClientStore().ModelByName(c.ControllerName(), c.ModelName())
 	if err != nil {
 		return "", errors.Trace(err)
 	}
