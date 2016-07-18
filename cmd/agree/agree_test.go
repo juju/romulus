@@ -77,6 +77,11 @@ func (s *agreeSuite) TestAgreement(c *gc.C) {
 		stdout:   "Agreed to revision 1 of test-term for Juju users\n",
 		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&terms.SaveAgreements{Agreements: []terms.SaveAgreement{{TermName: "test-term", TermRevision: 1}}}}}},
 	}, {
+		about:    "everything works with owner term",
+		args:     []string{"owner/test-term/1", "--yes"},
+		stdout:   "Agreed to revision 1 of test-term for Juju users\n",
+		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&terms.SaveAgreements{Agreements: []terms.SaveAgreement{{TermOwner: "owner", TermName: "test-term", TermRevision: 1}}}}}},
+	}, {
 		about: "cannot parse revision number",
 		args:  []string{"test-term/abc"},
 		err:   "invalid term format: strconv.ParseInt: parsing \"abc\": invalid syntax",
