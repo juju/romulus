@@ -84,7 +84,7 @@ func (s *agreeSuite) TestAgreement(c *gc.C) {
 	}, {
 		about: "cannot parse revision number",
 		args:  []string{"test-term/abc"},
-		err:   "invalid term format: strconv.ParseInt: parsing \"abc\": invalid syntax",
+		err:   `must specify a valid term revision "test-term/abc"`,
 	}, {
 		about: "missing arguments",
 		args:  []string{},

@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
+	"gopkg.in/juju/charm.v6-unstable"
 	"launchpad.net/gnuflag"
 
 	"github.com/juju/romulus/api/terms"
@@ -89,14 +89,14 @@ func (c *agreeCommand) Init(args []string) error {
 	}
 
 	for _, t := range args {
-		owner, name, rev, err := parseTermRevision(t)
+		termId, err := charm.ParseTerm(t)
 		if err != nil {
 			return errors.Annotate(err, "invalid term format")
 		}
-		if rev == 0 {
+		if termId.Revision == 0 {
 			return errors.Errorf("must specify a valid term revision %q", t)
 		}
-		c.terms = append(c.terms, term{owner, name, rev})
+		c.terms = append(c.terms, term{owner: termId.Owner, name: termId.Name, revision: termId.Revision})
 		c.termIds = append(c.termIds, t)
 	}
 	if len(c.terms) == 0 {
@@ -192,36 +192,6 @@ func saveAgreements(ctx *cmd.Context, termsClient terms.Client, ts []term) error
 
 var userAnswer = func() (string, error) {
 	return bufio.NewReader(os.Stdin).ReadString('\n')
-}
-
-func parseTermRevision(s string) (string, string, int, error) {
-	fail := func(err error) (string, string, int, error) {
-		return "", "", -1, err
-	}
-	tokens := strings.Split(s, "/")
-	termOwner := ""
-	termName := ""
-	revisionIndex := -1
-	switch len(tokens) {
-	case 1:
-		termName = tokens[0]
-		return termOwner, termName, 0, nil
-	case 2:
-		termName = tokens[0]
-		revisionIndex = 1
-	case 3:
-		termOwner = tokens[0]
-		termName = tokens[1]
-		revisionIndex = 2
-	default:
-		return fail(errors.New("unknown term revision format"))
-	}
-
-	termRevision, err := strconv.Atoi(tokens[revisionIndex])
-	if err != nil {
-		return fail(errors.Trace(err))
-	}
-	return termOwner, termName, termRevision, nil
 }
 
 func printTerms(ctx *cmd.Context, terms []terms.GetTermsResponse) error {
