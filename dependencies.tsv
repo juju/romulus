@@ -22,6 +22,7 @@ github.com/juju/persistent-cookiejar	git	e710b897c13ca52828ca2fc9769465186fd6d15
 github.com/juju/replicaset	git	fb7294cf57a1e2f08a57691f1246d129a87ab7e8	2015-05-08T02:21:43Z
 github.com/juju/rfc	git	ebdbbdb950cd039a531d15cdc2ac2cbd94f068ee	2016-07-11T02:42:13Z
 github.com/juju/schema	git	075de04f9b7d7580d60a1e12a0b3f50bb18e6998	2016-04-20T04:42:03Z
+github.com/juju/terms-client	git	8b4b1f20960150c2529db2003824014490291299	2016-08-08T09:34:01Z
 github.com/juju/testing	git	ccf839b5a07a7a05009f8fa3ec41cd05fb2e0b08	2016-06-24T20:35:24Z
 github.com/juju/txn	git	99ec629d0066a4d73c54d8e021a7fc1dc07df614	2015-06-09T16:58:27Z
 github.com/juju/usso	git	68a59c96c178fbbad65926e7f93db50a2cd14f33	2016-04-01T10:44:24Z

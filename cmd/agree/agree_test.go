@@ -9,11 +9,12 @@ import (
 
 	"github.com/juju/cmd/cmdtesting"
 	coretesting "github.com/juju/juju/testing"
+	"github.com/juju/terms-client/api"
+	"github.com/juju/terms-client/api/wireformat"
 	jujutesting "github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
-	"github.com/juju/romulus/api/terms"
 	"github.com/juju/romulus/cmd/agree"
 )
 
@@ -34,7 +35,7 @@ func (s *agreeSuite) SetUpTest(c *gc.C) {
 	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.client = &mockClient{}
 
-	jujutesting.PatchValue(agree.ClientNew, func(...terms.ClientOption) (terms.Client, error) {
+	jujutesting.PatchValue(agree.ClientNew, func(...api.ClientOption) (api.Client, error) {
 		return s.client, nil
 	})
 }
@@ -45,7 +46,7 @@ func (s *agreeSuite) TestAgreementNothingToSign(c *gc.C) {
 	})
 
 	s.client.user = "test-user"
-	s.client.setUnsignedTerms([]terms.GetTermsResponse{})
+	s.client.setUnsignedTerms([]wireformat.GetTermsResponse{})
 
 	ctx, err := cmdtesting.RunCommand(c, agree.NewAgreeCommand(), "test-term/1")
 	c.Assert(err, jc.ErrorIsNil)
@@ -59,7 +60,7 @@ func (s *agreeSuite) TestAgreement(c *gc.C) {
 	})
 
 	s.client.user = "test-user"
-	s.client.setUnsignedTerms([]terms.GetTermsResponse{{
+	s.client.setUnsignedTerms([]wireformat.GetTermsResponse{{
 		Name:     "test-term",
 		Revision: 1,
 		Content:  testTerms,
@@ -75,12 +76,12 @@ func (s *agreeSuite) TestAgreement(c *gc.C) {
 		about:    "everything works",
 		args:     []string{"test-term/1", "--yes"},
 		stdout:   "Agreed to revision 1 of test-term for Juju users\n",
-		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&terms.SaveAgreements{Agreements: []terms.SaveAgreement{{TermName: "test-term", TermRevision: 1}}}}}},
+		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&wireformat.SaveAgreements{Agreements: []wireformat.SaveAgreement{{TermName: "test-term", TermRevision: 1}}}}}},
 	}, {
 		about:    "everything works with owner term",
 		args:     []string{"owner/test-term/1", "--yes"},
 		stdout:   "Agreed to revision 1 of test-term for Juju users\n",
-		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&terms.SaveAgreements{Agreements: []terms.SaveAgreement{{TermOwner: "owner", TermName: "test-term", TermRevision: 1}}}}}},
+		apiCalls: []jujutesting.StubCall{{FuncName: "SaveAgreement", Args: []interface{}{&wireformat.SaveAgreements{Agreements: []wireformat.SaveAgreement{{TermOwner: "owner", TermName: "test-term", TermRevision: 1}}}}}},
 	}, {
 		about: "cannot parse revision number",
 		args:  []string{"test-term/abc"},
@@ -101,11 +102,11 @@ Do you agree to the displayed terms? (Y/n): Agreed to revision 1 of test-term fo
 `,
 		apiCalls: []jujutesting.StubCall{{
 			FuncName: "GetUnunsignedTerms", Args: []interface{}{
-				&terms.CheckAgreementsRequest{Terms: []string{"test-term/1"}},
+				&wireformat.CheckAgreementsRequest{Terms: []string{"test-term/1"}},
 			},
 		}, {
 			FuncName: "SaveAgreement", Args: []interface{}{
-				&terms.SaveAgreements{Agreements: []terms.SaveAgreement{{TermName: "test-term", TermRevision: 1}}},
+				&wireformat.SaveAgreements{Agreements: []wireformat.SaveAgreement{{TermName: "test-term", TermRevision: 1}}},
 			},
 		}},
 	}, {
@@ -120,7 +121,7 @@ Do you agree to the displayed terms? (Y/n): You didn't agree to the presented te
 `,
 		apiCalls: []jujutesting.StubCall{{
 			FuncName: "GetUnunsignedTerms", Args: []interface{}{
-				&terms.CheckAgreementsRequest{Terms: []string{"test-term/1"}},
+				&wireformat.CheckAgreementsRequest{Terms: []string{"test-term/1"}},
 			},
 		}},
 	}, {
@@ -140,11 +141,11 @@ Do you agree to the displayed terms? (Y/n): Agreed to revision 1 of test-term fo
 		apiCalls: []jujutesting.StubCall{
 			{
 				FuncName: "GetUnunsignedTerms", Args: []interface{}{
-					&terms.CheckAgreementsRequest{Terms: []string{"test-term/1", "test-term/2"}},
+					&wireformat.CheckAgreementsRequest{Terms: []string{"test-term/1", "test-term/2"}},
 				},
 			}, {
 				FuncName: "SaveAgreement", Args: []interface{}{
-					&terms.SaveAgreements{Agreements: []terms.SaveAgreement{
+					&wireformat.SaveAgreements{Agreements: []wireformat.SaveAgreement{
 						{TermName: "test-term", TermRevision: 1},
 					}},
 				},
@@ -160,8 +161,8 @@ Do you agree to the displayed terms? (Y/n): Agreed to revision 1 of test-term fo
 Agreed to revision 2 of test-term for Juju users
 `,
 		apiCalls: []jujutesting.StubCall{
-			{FuncName: "SaveAgreement", Args: []interface{}{&terms.SaveAgreements{
-				Agreements: []terms.SaveAgreement{
+			{FuncName: "SaveAgreement", Args: []interface{}{&wireformat.SaveAgreements{
+				Agreements: []wireformat.SaveAgreement{
 					{TermName: "test-term", TermRevision: 1},
 					{TermName: "test-term", TermRevision: 2},
 				}}}}},
@@ -189,15 +190,16 @@ Agreed to revision 2 of test-term for Juju users
 }
 
 type mockClient struct {
+	api.Client
 	jujutesting.Stub
 
 	lock          sync.Mutex
 	user          string
-	terms         []terms.GetTermsResponse
-	unsignedTerms []terms.GetTermsResponse
+	terms         []wireformat.GetTermsResponse
+	unsignedTerms []wireformat.GetTermsResponse
 }
 
-func (c *mockClient) setUnsignedTerms(t []terms.GetTermsResponse) {
+func (c *mockClient) setUnsignedTerms(t []wireformat.GetTermsResponse) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.unsignedTerms = t
@@ -205,27 +207,27 @@ func (c *mockClient) setUnsignedTerms(t []terms.GetTermsResponse) {
 
 // SaveAgreement saves user's agreement to the specified
 // revision of the terms documents
-func (c *mockClient) SaveAgreement(p *terms.SaveAgreements) (*terms.SaveAgreementResponses, error) {
+func (c *mockClient) SaveAgreement(p *wireformat.SaveAgreements) (*wireformat.SaveAgreementResponses, error) {
 	c.AddCall("SaveAgreement", p)
-	responses := make([]terms.AgreementResponse, len(p.Agreements))
+	responses := make([]wireformat.AgreementResponse, len(p.Agreements))
 	for i, agreement := range p.Agreements {
-		responses[i] = terms.AgreementResponse{
+		responses[i] = wireformat.AgreementResponse{
 			User:     c.user,
 			Term:     agreement.TermName,
 			Revision: agreement.TermRevision,
 		}
 	}
-	return &terms.SaveAgreementResponses{responses}, nil
+	return &wireformat.SaveAgreementResponses{responses}, nil
 }
 
-func (c *mockClient) GetUnsignedTerms(p *terms.CheckAgreementsRequest) ([]terms.GetTermsResponse, error) {
+func (c *mockClient) GetUnsignedTerms(p *wireformat.CheckAgreementsRequest) ([]wireformat.GetTermsResponse, error) {
 	c.MethodCall(c, "GetUnunsignedTerms", p)
-	r := make([]terms.GetTermsResponse, len(c.unsignedTerms))
+	r := make([]wireformat.GetTermsResponse, len(c.unsignedTerms))
 	copy(r, c.unsignedTerms)
 	return r, nil
 }
 
-func (c *mockClient) GetUsersAgreements() ([]terms.AgreementResponse, error) {
+func (c *mockClient) GetUsersAgreements() ([]wireformat.AgreementResponse, error) {
 	c.MethodCall(c, "GetUsersAgreements")
-	return []terms.AgreementResponse{}, nil
+	return []wireformat.AgreementResponse{}, nil
 }

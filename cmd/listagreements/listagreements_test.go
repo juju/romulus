@@ -9,12 +9,12 @@ import (
 
 	"github.com/juju/cmd/cmdtesting"
 	coretesting "github.com/juju/juju/testing"
+	"github.com/juju/terms-client/api/wireformat"
 	jujutesting "github.com/juju/testing"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 
-	"github.com/juju/romulus/api/terms"
 	"github.com/juju/romulus/cmd/listagreements"
 )
 
@@ -70,7 +70,7 @@ func (s *listAgreementsSuite) TestGetUsersAgreements(c *gc.C) {
 	c.Assert(err, gc.ErrorMatches, "failed to list user agreements: well, this is embarassing")
 	c.Assert(s.client.called, jc.IsTrue)
 
-	agreements := []terms.AgreementResponse{{
+	agreements := []wireformat.AgreementResponse{{
 		User:      "test-user",
 		Term:      "test-term",
 		Revision:  1,
@@ -103,7 +103,7 @@ func (s *listAgreementsSuite) TestGetUsersAgreementsWithTermOwner(c *gc.C) {
 	c.Assert(err, gc.ErrorMatches, "failed to list user agreements: well, this is embarassing")
 	c.Assert(s.client.called, jc.IsTrue)
 
-	agreements := []terms.AgreementResponse{{
+	agreements := []wireformat.AgreementResponse{{
 		User:      "test-user",
 		Owner:     "owner",
 		Term:      "test-term",
@@ -128,11 +128,11 @@ func (s *listAgreementsSuite) TestGetUsersAgreementsWithTermOwner(c *gc.C) {
 type mockClient struct {
 	called bool
 
-	agreements []terms.AgreementResponse
+	agreements []wireformat.AgreementResponse
 	err        string
 }
 
-func (c *mockClient) setAgreements(agreements []terms.AgreementResponse) {
+func (c *mockClient) setAgreements(agreements []wireformat.AgreementResponse) {
 	c.agreements = agreements
 	c.called = false
 	c.err = ""
@@ -144,7 +144,7 @@ func (c *mockClient) setError(err string) {
 	c.agreements = nil
 }
 
-func (c *mockClient) GetUsersAgreements() ([]terms.AgreementResponse, error) {
+func (c *mockClient) GetUsersAgreements() ([]wireformat.AgreementResponse, error) {
 	c.called = true
 	if c.err != "" {
 		return nil, errors.New(c.err)

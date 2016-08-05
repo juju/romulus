@@ -14,14 +14,14 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/terms-client/api"
+	"github.com/juju/terms-client/api/wireformat"
 	"gopkg.in/juju/charm.v6-unstable"
 	"launchpad.net/gnuflag"
-
-	"github.com/juju/romulus/api/terms"
 )
 
 var (
-	clientNew = terms.NewClient
+	clientNew = api.NewClient
 )
 
 const agreeDoc = `
@@ -112,7 +112,7 @@ func (c *agreeCommand) Run(ctx *cmd.Context) error {
 		return errors.Trace(err)
 	}
 
-	termsClient, err := clientNew(terms.HTTPClient(client))
+	termsClient, err := clientNew(api.HTTPClient(client))
 	if err != nil {
 		return err
 	}
@@ -125,8 +125,8 @@ func (c *agreeCommand) Run(ctx *cmd.Context) error {
 		return nil
 	}
 
-	needAgreement := []terms.GetTermsResponse{}
-	terms, err := termsClient.GetUnsignedTerms(&terms.CheckAgreementsRequest{
+	needAgreement := []wireformat.GetTermsResponse{}
+	terms, err := termsClient.GetUnsignedTerms(&wireformat.CheckAgreementsRequest{
 		Terms: c.termIds,
 	})
 	if err != nil {
@@ -168,16 +168,16 @@ func (c *agreeCommand) Run(ctx *cmd.Context) error {
 	return nil
 }
 
-func saveAgreements(ctx *cmd.Context, termsClient terms.Client, ts []term) error {
-	agreements := make([]terms.SaveAgreement, len(ts))
+func saveAgreements(ctx *cmd.Context, termsClient api.Client, ts []term) error {
+	agreements := make([]wireformat.SaveAgreement, len(ts))
 	for i, t := range ts {
-		agreements[i] = terms.SaveAgreement{
+		agreements[i] = wireformat.SaveAgreement{
 			TermOwner:    t.owner,
 			TermName:     t.name,
 			TermRevision: t.revision,
 		}
 	}
-	response, err := termsClient.SaveAgreement(&terms.SaveAgreements{Agreements: agreements})
+	response, err := termsClient.SaveAgreement(&wireformat.SaveAgreements{Agreements: agreements})
 	if err != nil {
 		return errors.Annotate(err, "failed to save user agreement")
 	}
@@ -194,7 +194,7 @@ var userAnswer = func() (string, error) {
 	return bufio.NewReader(os.Stdin).ReadString('\n')
 }
 
-func printTerms(ctx *cmd.Context, terms []terms.GetTermsResponse) error {
+func printTerms(ctx *cmd.Context, terms []wireformat.GetTermsResponse) error {
 	output := ""
 	for _, t := range terms {
 		output += fmt.Sprintf(`
