@@ -9,22 +9,22 @@ import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/terms-client/api"
+	"github.com/juju/terms-client/api/wireformat"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"launchpad.net/gnuflag"
-
-	"github.com/juju/romulus/api/terms"
 )
 
 var (
 	newClient = func(client *httpbakery.Client) (TermsServiceClient, error) {
-		return terms.NewClient(terms.HTTPClient(client))
+		return api.NewClient(api.HTTPClient(client))
 	}
 )
 
 // TermsServiceClient defines methods needed for the Terms Service CLI
 // commands.
 type TermsServiceClient interface {
-	GetUsersAgreements() ([]terms.AgreementResponse, error)
+	GetUsersAgreements() ([]wireformat.AgreementResponse, error)
 }
 
 const listAgreementsDoc = `
@@ -86,7 +86,7 @@ func (c *listAgreementsCommand) Run(ctx *cmd.Context) error {
 		return errors.Annotate(err, "failed to list user agreements")
 	}
 	if agreements == nil {
-		agreements = []terms.AgreementResponse{}
+		agreements = []wireformat.AgreementResponse{}
 	}
 	err = c.out.Write(ctx, agreements)
 	if err != nil {
