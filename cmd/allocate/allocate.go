@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"launchpad.net/gnuflag"
+	"github.com/juju/gnuflag"
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"

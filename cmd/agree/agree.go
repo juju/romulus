@@ -17,7 +17,7 @@ import (
 	"github.com/juju/terms-client/api"
 	"github.com/juju/terms-client/api/wireformat"
 	"gopkg.in/juju/charm.v6-unstable"
-	"launchpad.net/gnuflag"
+	"github.com/juju/gnuflag"
 )
 
 var (

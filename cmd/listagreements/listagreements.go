@@ -12,7 +12,7 @@ import (
 	"github.com/juju/terms-client/api"
 	"github.com/juju/terms-client/api/wireformat"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
-	"launchpad.net/gnuflag"
+	"github.com/juju/gnuflag"
 )
 
 var (

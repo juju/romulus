@@ -19,7 +19,7 @@ import (
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/yaml.v2"
-	"launchpad.net/gnuflag"
+	"github.com/juju/gnuflag"
 
 	api "github.com/juju/romulus/api/plan"
 	rcmd "github.com/juju/romulus/cmd"

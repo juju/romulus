@@ -11,7 +11,7 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
-	"launchpad.net/gnuflag"
+	"github.com/juju/gnuflag"
 
 	api "github.com/juju/romulus/api/budget"
 	wireformat "github.com/juju/romulus/wireformat/budget"
