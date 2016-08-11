@@ -29,15 +29,16 @@ type allocateSuite struct {
 func (s *allocateSuite) SetUpTest(c *gc.C) {
 	s.FakeJujuXDGDataHomeSuite.SetUpTest(c)
 	s.store = &jujuclienttesting.MemStore{
+		CurrentControllerName: "controller",
 		Controllers: map[string]jujuclient.ControllerDetails{
 			"controller": {},
 		},
 		Models: map[string]*jujuclient.ControllerModels{
 			"controller": {
 				Models: map[string]jujuclient.ModelDetails{
-					"model": {"model-uuid"},
+					"admin@local/model": {"model-uuid"},
 				},
-				CurrentModel: "model",
+				CurrentModel: "admin@local/model",
 			},
 		},
 		Accounts: map[string]jujuclient.AccountDetails{

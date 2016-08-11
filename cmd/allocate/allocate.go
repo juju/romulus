@@ -8,10 +8,9 @@ import (
 	"regexp"
 	"strings"
 
-	"launchpad.net/gnuflag"
-
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/gnuflag"
 	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/utils"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
