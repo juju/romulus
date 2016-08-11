@@ -16,10 +16,10 @@ import (
 	"github.com/gosuri/uitable"
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
+	"github.com/juju/gnuflag"
 	"github.com/juju/juju/cmd/modelcmd"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/yaml.v2"
-	"launchpad.net/gnuflag"
 
 	api "github.com/juju/romulus/api/plan"
 	rcmd "github.com/juju/romulus/cmd"
