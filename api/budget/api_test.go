@@ -427,7 +427,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -437,9 +437,8 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -452,7 +451,7 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, "cannot create allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -462,9 +461,8 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -475,7 +473,7 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -485,9 +483,8 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -501,7 +498,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -509,7 +506,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -526,7 +523,7 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, gc.ErrorMatches, "cannot update allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -534,7 +531,7 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -549,7 +546,7 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -557,7 +554,7 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -575,7 +572,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -583,7 +580,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -596,7 +593,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, gc.ErrorMatches, "cannot delete allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -604,7 +601,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -615,7 +612,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -623,7 +620,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }

@@ -6,8 +6,6 @@
 package budget
 
 import (
-	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -58,16 +56,7 @@ type Allocation struct {
 
 // SortableKey returns a key by which allocations can be sorted.
 func (a Allocation) SortableKey() string {
-	if len(a.Services) == 0 {
-		return a.Model
-	} else {
-		var services []string
-		for svc := range a.Services {
-			services = append(services, svc)
-		}
-		sort.Strings(services)
-		return fmt.Sprintf("%s:%s", a.Model, services[0])
-	}
+	return a.Model
 }
 
 // ServiceAllocation represents the amount the user
