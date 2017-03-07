@@ -12,13 +12,15 @@ import (
 // MetricBatch is a batch of metrics that will be sent to
 // the metric collector
 type MetricBatch struct {
-	UUID        string    `json:"uuid"`
-	ModelUUID   string    `json:"env-uuid"`
-	UnitName    string    `json:"unit-name"`
-	CharmUrl    string    `json:"charm-url"`
-	Created     time.Time `json:"created"`
-	Metrics     []Metric  `json:"metrics"`
-	Credentials []byte    `json:"credentials"`
+	UUID                string    `json:"uuid"`
+	ModelUUID           string    `json:"env-uuid"`
+	UnitName            string    `json:"unit-name"`
+	CharmUrl            string    `json:"charm-url"`
+	Created             time.Time `json:"created"`
+	Metrics             []Metric  `json:"metrics"`
+	Credentials         []byte    `json:"credentials"`
+	ResellerCredentials []byte    `json:"reseller-credentials"`
+	SLACredentials      []byte    `json:"sla-credentials"`
 }
 
 // Metric represents a single Metric.
