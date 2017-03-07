@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-var BaseURL = "https://api.jujucharms.com/omnibus/v2"
+var BaseURL = "https://api.jujucharms.com/omnibus/v3"
 
 // CreateBudgetRequest is used in the requests to the budget service
 // for creating the specified budget.

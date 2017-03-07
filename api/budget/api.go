@@ -120,8 +120,6 @@ func (c *client) DeleteAllocation(model string) (string, error) {
 // hasURL is an interface implemented by request structures that
 // modify the request URL.
 type hasURL interface {
-	// URL takes the base URL as a parameter and returns
-	// the modified request URL.
 	URL() string
 }
 
