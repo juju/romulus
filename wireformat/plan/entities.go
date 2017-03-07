@@ -2,7 +2,7 @@
 // Licensed under the AGPLv3, see LICENCE file for details.
 
 // The plan package contains wireformat structs intended for
-// subscription service plan management API.
+// the plan management API.
 package plan
 
 import (
