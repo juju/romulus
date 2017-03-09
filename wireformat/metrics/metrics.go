@@ -6,6 +6,7 @@
 package metrics
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -23,6 +24,25 @@ type MetricBatch struct {
 	SLACredentials      []byte    `json:"sla-credentials"`
 }
 
+type metricBatchV1 MetricBatch
+
+// UnmarshalJSON implements a transitional json.Unmarshaler to allow
+// forward-compatible processing of fields renamed in Juju 2.0.
+func (mb *MetricBatch) UnmarshalJSON(data []byte) error {
+	v := struct {
+		metricBatchV1
+		ModelUUID string `json:"model-uuid"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*mb = MetricBatch(v.metricBatchV1)
+	if mb.ModelUUID == "" {
+		mb.ModelUUID = v.ModelUUID
+	}
+	return nil
+}
+
 // Metric represents a single Metric.
 type Metric struct {
 	Key   string    `json:"key"`
@@ -35,6 +55,25 @@ type Response struct {
 	UUID           string               `json:"uuid"`
 	EnvResponses   EnvironmentResponses `json:"env-responses"`
 	NewGracePeriod time.Duration        `json:"new-grace-period"`
+}
+
+type responseV1 Response
+
+// UnmarshalJSON implements a transitional json.Unmarshaler to allow
+// forward-compatible processing of fields renamed in Juju 2.0.
+func (r *Response) UnmarshalJSON(data []byte) error {
+	v := struct {
+		responseV1
+		ModelResponses EnvironmentResponses `json:"model-responses"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	*r = Response(v.responseV1)
+	if r.EnvResponses == nil {
+		r.EnvResponses = v.ModelResponses
+	}
+	return nil
 }
 
 type EnvironmentResponses map[string]EnvResponse
@@ -64,7 +103,6 @@ func (e EnvironmentResponses) SetStatus(modelUUID, unitName, status, info string
 		env.UnitStatuses[unitName] = s
 	}
 	e[modelUUID] = env
-
 }
 
 // EnvResponse contains the response data relevant to a concrete environment.

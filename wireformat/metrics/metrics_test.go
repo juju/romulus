@@ -4,6 +4,8 @@
 package metrics_test
 
 import (
+	"encoding/json"
+
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
@@ -63,4 +65,81 @@ func (s *metricsSuite) TestSetStatus(c *gc.C) {
 	c.Assert(resp, gc.HasLen, 2)
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Status, gc.Equals, "RED")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Info, gc.Equals, "Invalid data received.")
+}
+
+func (t *metricsSuite) TestUnmarshalEnvUUID(c *gc.C) {
+	data := []byte(`{
+	"uuid": "some batch",
+	"env-uuid": "some env",
+	"unit-name": "some unit",
+	"charm-url": "some charm"
+}`)
+	var mb metrics.MetricBatch
+	err := json.Unmarshal(data, &mb)
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(mb.ModelUUID, gc.Equals, "some env")
+}
+
+func (t *metricsSuite) TestUnmarshalModelUUID(c *gc.C) {
+	data := []byte(`{
+	"uuid": "some batch",
+	"model-uuid": "some model",
+	"unit-name": "some unit",
+	"charm-url": "some charm"
+}`)
+	var mb metrics.MetricBatch
+	err := json.Unmarshal(data, &mb)
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(mb.ModelUUID, gc.Equals, "some model")
+}
+
+func (t *metricsSuite) TestUnmarshalResponseService(c *gc.C) {
+	data := []byte(`{
+	"uuid": "some uuid",
+	"env-responses": {
+		"one": {
+			"acks": ["a", "b", "c"],
+			"unit-statuses": {
+				"foo": {
+					"status": "good",
+					"info": "times"
+				}
+			}
+		}
+	}
+}`)
+	var r metrics.Response
+	err := json.Unmarshal(data, &r)
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(r.EnvResponses, gc.NotNil)
+	c.Assert(r.EnvResponses["one"], jc.DeepEquals, metrics.EnvResponse{
+		AcknowledgedBatches: []string{"a", "b", "c"},
+		UnitStatuses: map[string]metrics.UnitStatus{
+			"foo": metrics.UnitStatus{Status: "good", Info: "times"},
+		},
+	})
+}
+
+func (t *metricsSuite) TestUnmarshalResponseApplication(c *gc.C) {
+	data := []byte(`{
+	"uuid": "some uuid",
+	"model-responses": {
+		"two": {
+			"acks": ["d", "e", "f"],
+			"unit-statuses": {
+				"bar": {"status": "none"}
+			}
+		}
+	}
+}`)
+	var r metrics.Response
+	err := json.Unmarshal(data, &r)
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(r.EnvResponses, gc.NotNil)
+	c.Assert(r.EnvResponses["two"], jc.DeepEquals, metrics.EnvResponse{
+		AcknowledgedBatches: []string{"d", "e", "f"},
+		UnitStatuses: map[string]metrics.UnitStatus{
+			"bar": metrics.UnitStatus{Status: "none"},
+		},
+	})
 }
