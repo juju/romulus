@@ -33,7 +33,7 @@ func (s *metricsSuite) TestAck(c *gc.C) {
 	c.Assert(resp[modelUUID2].AcknowledgedBatches, jc.SameContents, []string{batchUUID})
 }
 
-func (s *metricsSuite) TestSetStatus(c *gc.C) {
+func (s *metricsSuite) TestSetUnitStatus(c *gc.C) {
 	resp := metrics.EnvironmentResponses{}
 	c.Assert(resp, gc.HasLen, 0)
 
@@ -42,25 +42,49 @@ func (s *metricsSuite) TestSetStatus(c *gc.C) {
 	unitName := "some-unit/0"
 	unitName2 := "some-unit/1"
 
-	resp.SetStatus(modelUUID, unitName, "GREEN", "")
+	resp.SetUnitStatus(modelUUID, unitName, "GREEN", "")
 	c.Assert(resp, gc.HasLen, 1)
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Status, gc.Equals, "GREEN")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Info, gc.Equals, "")
 
-	resp.SetStatus(modelUUID, unitName2, "RED", "Unit unresponsive.")
+	resp.SetUnitStatus(modelUUID, unitName2, "RED", "Unit unresponsive.")
 	c.Assert(resp, gc.HasLen, 1)
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Status, gc.Equals, "GREEN")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Info, gc.Equals, "")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName2].Status, gc.Equals, "RED")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName2].Info, gc.Equals, "Unit unresponsive.")
 
-	resp.SetStatus(modelUUID2, unitName, "UNKNOWN", "")
+	resp.SetUnitStatus(modelUUID2, unitName, "UNKNOWN", "")
 	c.Assert(resp, gc.HasLen, 2)
 	c.Assert(resp[modelUUID2].UnitStatuses[unitName].Status, gc.Equals, "UNKNOWN")
 	c.Assert(resp[modelUUID2].UnitStatuses[unitName].Info, gc.Equals, "")
 
-	resp.SetStatus(modelUUID, unitName, "RED", "Invalid data received.")
+	resp.SetUnitStatus(modelUUID, unitName, "RED", "Invalid data received.")
 	c.Assert(resp, gc.HasLen, 2)
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Status, gc.Equals, "RED")
 	c.Assert(resp[modelUUID].UnitStatuses[unitName].Info, gc.Equals, "Invalid data received.")
+}
+
+func (s *metricsSuite) TestSetModelStatus(c *gc.C) {
+	resp := metrics.EnvironmentResponses{}
+	c.Assert(resp, gc.HasLen, 0)
+
+	for i, test := range []struct {
+		status, info string
+	}{{
+		"GREEN", "it's good",
+	}, {
+		"AMBER", "outlook unclear",
+	}, {
+		"RED", "oh no",
+	}} {
+		c.Logf("test#%d", i)
+		resp.SetModelStatus("model-uuid", test.status, test.info)
+		c.Check(resp["model-uuid"].ModelStatus.Status, gc.Equals, test.status)
+		c.Check(resp["model-uuid"].ModelStatus.Info, gc.Equals, test.info)
+		c.Check(resp, gc.HasLen, 1)
+	}
+
+	resp.SetModelStatus("model-uuid2", "GREEN", "good")
+	c.Assert(resp, gc.HasLen, 2)
 }

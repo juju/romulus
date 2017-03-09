@@ -37,18 +37,19 @@ type Response struct {
 	NewGracePeriod time.Duration        `json:"new-grace-period"`
 }
 
+// EnvironmentResponses is a map of model UUID to wireformat responses.
 type EnvironmentResponses map[string]EnvResponse
 
 // Ack adds the specified the batch UUID to the list of acknowledged batches
 // for the specified environment.
 func (e EnvironmentResponses) Ack(modelUUID, batchUUID string) {
 	env := e[modelUUID]
-
 	env.AcknowledgedBatches = append(env.AcknowledgedBatches, batchUUID)
 	e[modelUUID] = env
 }
 
-func (e EnvironmentResponses) SetStatus(modelUUID, unitName, status, info string) {
+// SetUnitStatus sets the unit meter status.
+func (e EnvironmentResponses) SetUnitStatus(modelUUID, unitName, status, info string) {
 	s := UnitStatus{
 		Status: status,
 		Info:   info,
@@ -64,15 +65,33 @@ func (e EnvironmentResponses) SetStatus(modelUUID, unitName, status, info string
 		env.UnitStatuses[unitName] = s
 	}
 	e[modelUUID] = env
+}
 
+// SetModelStatus sets the model meter status.
+func (e EnvironmentResponses) SetModelStatus(modelUUID, status, info string) {
+	s := ModelStatus{
+		Status: status,
+		Info:   info,
+	}
+	env := e[modelUUID]
+	env.ModelStatus = s
+	e[modelUUID] = env
 }
 
 // EnvResponse contains the response data relevant to a concrete environment.
 type EnvResponse struct {
 	AcknowledgedBatches []string              `json:"acks,omitempty"`
+	ModelStatus         ModelStatus           `json:"model-status,omitempty"`
 	UnitStatuses        map[string]UnitStatus `json:"unit-statuses,omitempty"`
 }
 
+// ModelStatus represents the status of a model.
+type ModelStatus struct {
+	Status string `json:"status"`
+	Info   string `json:"info"`
+}
+
+// UnitStatus represents the status of a unit.
 type UnitStatus struct {
 	Status string `json:"status"`
 	Info   string `json:"info"`
