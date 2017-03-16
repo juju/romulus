@@ -46,12 +46,11 @@ type BudgetTotals struct {
 // Allocation represents the amount the user has allocated to specific
 // services in a named model.
 type Allocation struct {
-	Owner    string                       `json:"owner"`
-	Limit    string                       `json:"limit"`
-	Consumed string                       `json:"consumed"`
-	Usage    string                       `json:"usage"`
-	Model    string                       `json:"model"`
-	Services map[string]ServiceAllocation `json:"services"`
+	Owner    string `json:"owner"`
+	Limit    string `json:"limit"`
+	Consumed string `json:"consumed"`
+	Usage    string `json:"usage"`
+	Model    string `json:"model"`
 }
 
 // SortableKey returns a key by which allocations can be sorted.
