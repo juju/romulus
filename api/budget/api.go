@@ -85,35 +85,32 @@ func (c *client) GetBudget(budget string) (*wireformat.BudgetWithAllocations, er
 }
 
 // CreateAllocation creates a new allocation in a specific budget.
-func (c *client) CreateAllocation(budget, limit string, model string, services []string) (string, error) {
+func (c *client) CreateAllocation(budget, limit string, model string) (string, error) {
 	create := wireformat.CreateAllocationRequest{
-		Budget:   budget,
-		Limit:    limit,
-		Model:    model,
-		Services: services,
+		Budget: budget,
+		Limit:  limit,
+		Model:  model,
 	}
 	var response string
 	err := c.doRequest(create, &response)
 	return response, err
 }
 
-// UpdateAllocation updates the allocation associated with the specified service with new limit.
-func (c *client) UpdateAllocation(model, service, limit string) (string, error) {
+// UpdateAllocation updates the allocation associated with the specified model with new limit.
+func (c *client) UpdateAllocation(model, limit string) (string, error) {
 	create := wireformat.UpdateAllocationRequest{
-		Limit:       limit,
-		Model:       model,
-		Application: service,
+		Limit: limit,
+		Model: model,
 	}
 	var response string
 	err := c.doRequest(create, &response)
 	return response, err
 }
 
-// DeleteAllocation deletes the allocation associated with the specified service.
-func (c *client) DeleteAllocation(model, application string) (string, error) {
+// DeleteAllocation deletes the allocation associated with the specified model.
+func (c *client) DeleteAllocation(model string) (string, error) {
 	create := wireformat.DeleteAllocationRequest{
-		Model:       model,
-		Application: application,
+		Model: model,
 	}
 	var response string
 	err := c.doRequest(create, &response)
@@ -123,8 +120,6 @@ func (c *client) DeleteAllocation(model, application string) (string, error) {
 // hasURL is an interface implemented by request structures that
 // modify the request URL.
 type hasURL interface {
-	// URL takes the base URL as a parameter and returns
-	// the modified request URL.
 	URL() string
 }
 

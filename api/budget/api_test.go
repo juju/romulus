@@ -49,7 +49,7 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{
 					"limit":  "200",
 					"budget": "personal",
@@ -73,7 +73,7 @@ func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{
 					"limit":  "200",
 					"budget": "personal",
@@ -95,7 +95,7 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{
 					"limit":  "200",
 					"budget": "personal",
@@ -116,7 +116,7 @@ func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{
 					"limit":  "200",
 					"budget": "personal",
@@ -138,7 +138,7 @@ func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{
 					"limit":  "200",
 					"budget": "personal",
@@ -201,7 +201,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{},
 			}}})
 }
@@ -222,7 +222,7 @@ func (t *TSuite) TestListBudgetsServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{},
 			}}})
 }
@@ -241,7 +241,7 @@ func (t *TSuite) TestListBudgetsRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget",
+				"https://api.jujucharms.com/omnibus/v3/budget",
 				map[string]interface{}{},
 			}}})
 }
@@ -262,8 +262,8 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -287,8 +287,8 @@ func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -310,8 +310,8 @@ func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -336,25 +336,12 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 			Consumed: "500.00",
 			Usage:    "42%",
 			Model:    "model.joe",
-			Services: map[string]wireformat.ServiceAllocation{
-				"wordpress": wireformat.ServiceAllocation{
-					Consumed: "300.00",
-				},
-				"mysql": wireformat.ServiceAllocation{
-					Consumed: "200.00",
-				},
-			},
 		}, {
 			Owner:    "user.jess",
 			Limit:    "1000.00",
 			Consumed: "600.00",
 			Usage:    "60%",
 			Model:    "model.jess",
-			Services: map[string]wireformat.ServiceAllocation{
-				"landscape": wireformat.ServiceAllocation{
-					Consumed: "600.00",
-				},
-			},
 		},
 		},
 	}
@@ -373,7 +360,7 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{},
 			}}})
 }
@@ -394,7 +381,7 @@ func (t *TSuite) TestGetBudgetServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{},
 			}}})
 }
@@ -413,7 +400,7 @@ func (t *TSuite) TestGetBudgetRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal",
 				map[string]interface{}{},
 			}}})
 }
@@ -427,7 +414,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -435,11 +422,10 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -452,7 +438,7 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, "cannot create allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -460,11 +446,10 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -475,7 +460,7 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model", []string{"db"})
+	response, err := client.CreateAllocation("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -483,11 +468,10 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v2/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
 				map[string]interface{}{
-					"limit":    "200",
-					"model":    "model",
-					"services": []interface{}{"db"},
+					"limit": "200",
+					"model": "model",
 				},
 			}}})
 }
@@ -501,15 +485,15 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -526,15 +510,15 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, gc.ErrorMatches, "cannot update allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -549,15 +533,15 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "db", "200")
+	response, err := client.UpdateAllocation("model-uuid", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
-				"application/json+patch",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"application/json",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -575,7 +559,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -583,7 +567,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -596,7 +580,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, gc.ErrorMatches, "cannot delete allocation")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -604,7 +588,7 @@ func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }
@@ -615,7 +599,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid", "db")
+	response, err := client.DeleteAllocation("model-uuid")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -623,7 +607,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v2/model/model-uuid/service/db/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
 				map[string]interface{}{},
 			}}})
 }

@@ -6,8 +6,6 @@
 package budget
 
 import (
-	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -48,26 +46,16 @@ type BudgetTotals struct {
 // Allocation represents the amount the user has allocated to specific
 // services in a named model.
 type Allocation struct {
-	Owner    string                       `json:"owner"`
-	Limit    string                       `json:"limit"`
-	Consumed string                       `json:"consumed"`
-	Usage    string                       `json:"usage"`
-	Model    string                       `json:"model"`
-	Services map[string]ServiceAllocation `json:"services"`
+	Owner    string `json:"owner"`
+	Limit    string `json:"limit"`
+	Consumed string `json:"consumed"`
+	Usage    string `json:"usage"`
+	Model    string `json:"model"`
 }
 
 // SortableKey returns a key by which allocations can be sorted.
 func (a Allocation) SortableKey() string {
-	if len(a.Services) == 0 {
-		return a.Model
-	} else {
-		var services []string
-		for svc := range a.Services {
-			services = append(services, svc)
-		}
-		sort.Strings(services)
-		return fmt.Sprintf("%s:%s", a.Model, services[0])
-	}
+	return a.Model
 }
 
 // ServiceAllocation represents the amount the user

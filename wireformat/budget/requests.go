@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-var BaseURL = "https://api.jujucharms.com/omnibus/v2"
+var BaseURL = "https://api.jujucharms.com/omnibus/v3"
 
 // CreateBudgetRequest is used in the requests to the budget service
 // for creating the specified budget.
@@ -53,7 +53,7 @@ type SetBudgetRequest struct {
 }
 
 // ContentType return the content-type header to be set for the request.
-func (SetBudgetRequest) ContentType() string { return "application/json+patch" }
+func (SetBudgetRequest) ContentType() string { return "application/json" }
 
 // Method returns the method of the request.
 func (SetBudgetRequest) Method() string { return "PATCH" }
@@ -85,10 +85,9 @@ func (GetBudgetRequest) Method() string { return "GET" }
 
 // CreateAllocationRequest defines a request to create an allocation in the specified budget.
 type CreateAllocationRequest struct {
-	Model    string   `json:"model"`
-	Services []string `json:"services"`
-	Limit    string   `json:"limit"`
-	Budget   string   `json:"-"`
+	Model  string `json:"model"`
+	Limit  string `json:"limit"`
+	Budget string `json:"-"`
 }
 
 // URL returns the URL for the request.
@@ -106,19 +105,18 @@ func (CreateAllocationRequest) Method() string { return "POST" }
 func (r CreateAllocationRequest) Body() interface{} { return r }
 
 // UpdateAllocationRequest defines a request to update an allocation
-// associated with a service.
+// associated with a model.
 type UpdateAllocationRequest struct {
-	Model       string `json:"-"`
-	Application string `json:"-"`
-	Limit       string `json:"limit"`
+	Model string `json:"-"`
+	Limit string `json:"limit"`
 }
 
 // ContentType return the content-type header to be set for the request.
-func (UpdateAllocationRequest) ContentType() string { return "application/json+patch" }
+func (UpdateAllocationRequest) ContentType() string { return "application/json" }
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Application)
+	return fmt.Sprintf("%s/model/%s/allocation", BaseURL, r.Model)
 }
 
 // Method returns the method for the request.
@@ -132,15 +130,14 @@ func (r UpdateAllocationRequest) Body() interface{} {
 }
 
 // DeleteAllocationRequwest defines a request that removes an allocation associated
-// with a service.
+// with a model.
 type DeleteAllocationRequest struct {
-	Model       string `json:"-"`
-	Application string `json:"-"`
+	Model string `json:"-"`
 }
 
 // URL returns the URL for the request.
 func (r DeleteAllocationRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/service/%s/allocation", BaseURL, r.Model, r.Application)
+	return fmt.Sprintf("%s/model/%s/allocation", BaseURL, r.Model)
 }
 
 // Method returns the method for the request.
