@@ -96,7 +96,7 @@ func (c *client) CreateAllocation(budget, limit string, model string) (string, e
 	return response, err
 }
 
-// UpdateAllocation updates the allocation associated with the specified service with new limit.
+// UpdateAllocation updates the allocation associated with the specified model with new limit.
 func (c *client) UpdateAllocation(model, limit string) (string, error) {
 	create := wireformat.UpdateAllocationRequest{
 		Limit: limit,
@@ -107,7 +107,7 @@ func (c *client) UpdateAllocation(model, limit string) (string, error) {
 	return response, err
 }
 
-// DeleteAllocation deletes the allocation associated with the specified service.
+// DeleteAllocation deletes the allocation associated with the specified model.
 func (c *client) DeleteAllocation(model string) (string, error) {
 	create := wireformat.DeleteAllocationRequest{
 		Model: model,
