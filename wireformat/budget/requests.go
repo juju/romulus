@@ -53,7 +53,7 @@ type SetBudgetRequest struct {
 }
 
 // ContentType return the content-type header to be set for the request.
-func (SetBudgetRequest) ContentType() string { return "application/json+patch" }
+func (SetBudgetRequest) ContentType() string { return "application/json" }
 
 // Method returns the method of the request.
 func (SetBudgetRequest) Method() string { return "PATCH" }
@@ -112,7 +112,7 @@ type UpdateAllocationRequest struct {
 }
 
 // ContentType return the content-type header to be set for the request.
-func (UpdateAllocationRequest) ContentType() string { return "application/json+patch" }
+func (UpdateAllocationRequest) ContentType() string { return "application/json" }
 
 // URL returns the URL for the request.
 func (r UpdateAllocationRequest) URL() string {
