@@ -16,6 +16,7 @@ import (
 	"github.com/juju/errors"
 
 	wireformat "github.com/juju/romulus/wireformat/budget"
+	"github.com/juju/romulus/wireformat/common"
 )
 
 type httpErrorResponse struct {
@@ -183,7 +184,7 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		resp, err = c.h.DoWithBody(r, bytes.NewReader(payload.Bytes()))
 		if err != nil {
 			if strings.HasSuffix(err.Error(), "Connection refused") {
-				return wireformat.NotAvailError{}
+				return common.NotAvailError{}
 			}
 			return errors.Annotate(err, "failed to execute request")
 		}
@@ -200,11 +201,11 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		defer discardClose(resp)
 	}
 	if resp.StatusCode == http.StatusServiceUnavailable {
-		return wireformat.NotAvailError{Resp: resp.StatusCode}
+		return common.NotAvailError{StatusCode: resp.StatusCode}
 	} else if resp.StatusCode != http.StatusOK {
 		response := httpErrorResponse{}
 		json.NewDecoder(resp.Body).Decode(&response)
-		return wireformat.HttpError{
+		return common.HTTPError{
 			StatusCode: resp.StatusCode,
 			Message:    response.Error,
 		}

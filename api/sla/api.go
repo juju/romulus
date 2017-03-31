@@ -13,12 +13,17 @@ import (
 	"net/url"
 
 	"github.com/juju/errors"
+	"github.com/juju/romulus/wireformat/common"
 	"github.com/juju/romulus/wireformat/sla"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 	"gopkg.in/macaroon.v1"
 )
 
 var DefaultURL = "https://api.jujucharms.com/omnibus/v2"
+
+type httpErrorResponse struct {
+	Error string `json:"error"`
+}
 
 // AuthClient defines the interface available to clients of the support api.
 type AuthClient interface {
@@ -108,11 +113,12 @@ func (c *client) Authorize(modelUUID, supportLevel, budget string) (*macaroon.Ma
 	defer discardClose(response)
 
 	if response.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(response.Body)
-		if err == nil {
-			return nil, errors.Errorf("failed to authorize sla: received http response: %v - code %q", string(body), http.StatusText(response.StatusCode))
+		respErr := httpErrorResponse{}
+		json.NewDecoder(response.Body).Decode(&respErr)
+		return nil, common.HTTPError{
+			StatusCode: response.StatusCode,
+			Message:    respErr.Error,
 		}
-		return nil, errors.Errorf("failed to authorize sla: http response is %q", http.StatusText(response.StatusCode))
 	}
 
 	var m *macaroon.Macaroon
