@@ -18,6 +18,7 @@ import (
 
 	"github.com/juju/romulus/api/budget"
 	wireformat "github.com/juju/romulus/wireformat/budget"
+	"github.com/juju/romulus/wireformat/common"
 )
 
 type httpErr struct {
@@ -109,7 +110,7 @@ func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
 	}
 	client := budget.NewClient(httpClient)
 	response, err := client.CreateBudget("personal", "200")
-	c.Assert(wireformat.IsNotAvail(err), jc.IsTrue)
+	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
@@ -131,7 +132,7 @@ func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
 	httpClient.SetErrors(errors.New("Connection refused"))
 	client := budget.NewClient(httpClient)
 	response, err := client.CreateBudget("personal", "200")
-	c.Assert(wireformat.IsNotAvail(err), jc.IsTrue)
+	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{

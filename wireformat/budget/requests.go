@@ -5,7 +5,6 @@ package budget
 
 import (
 	"fmt"
-	"net/http"
 )
 
 var BaseURL = "https://api.jujucharms.com/omnibus/v3"
@@ -142,36 +141,3 @@ func (r DeleteAllocationRequest) URL() string {
 
 // Method returns the method for the request.
 func (DeleteAllocationRequest) Method() string { return "DELETE" }
-
-// HttpError represents an error caused by a failed http request.
-type HttpError struct {
-	StatusCode int
-	Message    string
-}
-
-func (e HttpError) Error() string {
-	if e.Message != "" {
-		return e.Message
-	} else {
-		return fmt.Sprintf("%d: %s", e.StatusCode, "request failed")
-	}
-}
-
-// NotAvailError indicates that the service is either unreachable or unavailable.
-type NotAvailError struct {
-	Resp int
-}
-
-func (e NotAvailError) Error() string {
-	if e.Resp == http.StatusServiceUnavailable {
-		return "service unavailable"
-	} else {
-		return "service unreachable"
-	}
-}
-
-// IsNotAvail indicates whether the error is a NotAvailError.
-func IsNotAvail(err error) bool {
-	_, ok := err.(NotAvailError)
-	return ok
-}
