@@ -16,10 +16,9 @@ import (
 	"github.com/juju/romulus/wireformat/common"
 	"github.com/juju/romulus/wireformat/sla"
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
-	"gopkg.in/macaroon.v1"
 )
 
-var DefaultURL = "https://api.jujucharms.com/omnibus/v2"
+var DefaultURL = "https://api.jujucharms.com/omnibus/v3"
 
 type httpErrorResponse struct {
 	Error string `json:"error"`
@@ -28,7 +27,7 @@ type httpErrorResponse struct {
 // AuthClient defines the interface available to clients of the support api.
 type AuthClient interface {
 	// Authorize returns the sla macaroon for the specified model
-	Authorize(modelUUID, supportLevel, budget string) (*macaroon.Macaroon, error)
+	Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResponse, error)
 }
 
 var _ AuthClient = (*client)(nil)
@@ -80,8 +79,8 @@ func NewClient(options ...ClientOption) (*client, error) {
 	return c, nil
 }
 
-// Authorize obtains a sla authorization macaroon.
-func (c *client) Authorize(modelUUID, supportLevel, budget string) (*macaroon.Macaroon, error) {
+// Authorize obtains an sla authorization.
+func (c *client) Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResponse, error) {
 	u, err := url.Parse(c.baseURL + "/sla/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -121,14 +120,14 @@ func (c *client) Authorize(modelUUID, supportLevel, budget string) (*macaroon.Ma
 		}
 	}
 
-	var m *macaroon.Macaroon
+	var respDoc sla.SLAResponse
 	decoder := json.NewDecoder(response.Body)
-	err = decoder.Decode(&m)
+	err = decoder.Decode(&respDoc)
 	if err != nil {
 		return nil, errors.Annotatef(err, "failed to unmarshal the response")
 	}
 
-	return m, nil
+	return &respDoc, nil
 }
 
 // discardClose reads any remaining data from the response body and closes it.
