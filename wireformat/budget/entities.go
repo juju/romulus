@@ -91,4 +91,5 @@ type BudgetSummary struct {
 	Unallocated string `json:"unallocated"`
 	Available   string `json:"available"`
 	Consumed    string `json:"consumed"`
+	Default     bool   `json:"default,omitempty"`
 }

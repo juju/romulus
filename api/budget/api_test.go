@@ -158,6 +158,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 				Unallocated: "20",
 				Available:   "45",
 				Consumed:    "5",
+				Default:     true,
 			},
 			wireformat.BudgetSummary{
 				Owner:       "bob",
@@ -167,6 +168,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 				Unallocated: "100",
 				Available:   "150",
 				Consumed:    "50",
+				Default:     false,
 			},
 			wireformat.BudgetSummary{
 				Owner:       "bob",
@@ -176,6 +178,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 				Unallocated: "40",
 				Available:   "40",
 				Consumed:    "10",
+				Default:     false,
 			},
 		},
 		Total: wireformat.BudgetTotals{
