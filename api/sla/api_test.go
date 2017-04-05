@@ -17,6 +17,7 @@ import (
 	"gopkg.in/macaroon.v1"
 
 	api "github.com/juju/romulus/api/sla"
+	"github.com/juju/romulus/wireformat/sla"
 )
 
 type clientSuite struct {
@@ -58,7 +59,7 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 
 	m, err := macaroon.New(nil, "", "")
 	c.Assert(err, jc.ErrorIsNil)
-	data, err := json.Marshal(m)
+	data, err := json.Marshal(sla.SLAResponse{Owner: "bob", Credentials: m})
 	c.Assert(err, jc.ErrorIsNil)
 
 	httpClient := &mockHttpClient{}
@@ -68,7 +69,7 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 	c.Assert(err, jc.ErrorIsNil)
 	resp, err := authClient.Authorize(modelUUID.String(), level, "")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(resp, jc.DeepEquals, m)
+	c.Assert(resp, jc.DeepEquals, &sla.SLAResponse{Owner: "bob", Credentials: m})
 }
 
 type mockHttpClient struct {
