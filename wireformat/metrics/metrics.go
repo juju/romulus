@@ -42,7 +42,11 @@ type EnvironmentResponses map[string]EnvResponse
 
 // Ack adds the specified the batch UUID to the list of acknowledged batches
 // for the specified environment.
+// If the model UUID or batch UUID is nil, the batch will not be acknowledged.
 func (e EnvironmentResponses) Ack(modelUUID, batchUUID string) {
+	if modelUUID == "" || batchUUID == "" {
+		return // Inability to ack is a response too.
+	}
 	env := e[modelUUID]
 	env.AcknowledgedBatches = append(env.AcknowledgedBatches, batchUUID)
 	e[modelUUID] = env
