@@ -9,43 +9,42 @@ import (
 	"strings"
 )
 
-// BudgetWithAllocations represents the current state of the budget and its allocations.
-type BudgetWithAllocations struct {
-	Limit       string       `json:"limit, omitempty"`
-	Total       BudgetTotals `json:"total"`
-	Allocations []Allocation `json:"allocations, omitempty"`
+// WalletWithBudgets represents the current state of the wallet and its budgets.
+type WalletWithBudgets struct {
+	Limit   string       `json:"limit, omitempty"`
+	Total   WalletTotals `json:"total"`
+	Budgets []Budget     `json:"budgets, omitempty"`
 }
 
-// SortedAllocations have additional methods that allow for sorting allocations.
-type SortedAllocations []Allocation
+// SortedBudgets have additional methods that allow for sorting budgets.
+type SortedBudgets []Budget
 
 // Len is part of the sort.Interface implementation.
-func (a SortedAllocations) Len() int {
+func (a SortedBudgets) Len() int {
 	return len(a)
 }
 
 // Swap is part of the sort.Interface implementation.
-func (a SortedAllocations) Swap(i, j int) {
+func (a SortedBudgets) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
 // Less is part of the sort.Interface implementation.
-func (a SortedAllocations) Less(i, j int) bool {
+func (a SortedBudgets) Less(i, j int) bool {
 	return a[i].SortableKey() < a[j].SortableKey()
 }
 
-type BudgetTotals struct {
+type WalletTotals struct {
 	Limit       string `json:"limit, omitempty"`
-	Allocated   string `json:"allocated"`
+	Budgeted    string `json:"budgeted"`
 	Available   string `json:"available"`
 	Unallocated string `json:"unallocated"`
 	Usage       string `json:"usage"`
 	Consumed    string `json:"consumed"`
 }
 
-// Allocation represents the amount the user has allocated to specific
-// services in a named model.
-type Allocation struct {
+// Budget represents the amount the user has allocated to a model.
+type Budget struct {
 	Owner    string `json:"owner"`
 	Limit    string `json:"limit"`
 	Consumed string `json:"consumed"`
@@ -54,40 +53,34 @@ type Allocation struct {
 }
 
 // SortableKey returns a key by which allocations can be sorted.
-func (a Allocation) SortableKey() string {
+func (a Budget) SortableKey() string {
 	return a.Model
 }
 
-// ServiceAllocation represents the amount the user
-// has allocated to a specific service.
-type ServiceAllocation struct {
-	Consumed string `json:"consumed"`
-}
-
-// ListBudgetsResponse is returned by the ListBdugets API call.
-type ListBudgetsResponse struct {
-	Budgets BudgetSummaries `json:"budgets, omitempty"`
-	Total   BudgetTotals    `json:"total, omitempty"`
+// ListWalletsResponse is returned by the ListBdugets API call.
+type ListWalletsResponse struct {
+	Wallets WalletSummaries `json:"wallets, omitempty"`
+	Total   WalletTotals    `json:"total, omitempty"`
 	Credit  string          `json:"credit, omitempty"`
 }
 
-// BudgetSummaries is an alphabetically sorted list of budget summaries.
-type BudgetSummaries []BudgetSummary
+// WalletSummaries is an alphabetically sorted list of wallet summaries.
+type WalletSummaries []WalletSummary
 
 // Implement sort.Interface.
-func (b BudgetSummaries) Len() int      { return len(b) }
-func (b BudgetSummaries) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
-func (b BudgetSummaries) Less(i, j int) bool {
-	return strings.ToLower(b[i].Budget) < strings.ToLower(b[j].Budget)
+func (b WalletSummaries) Len() int      { return len(b) }
+func (b WalletSummaries) Swap(i, j int) { b[i], b[j] = b[j], b[i] }
+func (b WalletSummaries) Less(i, j int) bool {
+	return strings.ToLower(b[i].Wallet) < strings.ToLower(b[j].Wallet)
 }
 
-// BudgetSummary represents the summary information for a single budget in
-// the ListBudgetsResponse structure.
-type BudgetSummary struct {
+// WalletSummary represents the summary information for a single wallet in
+// the ListWalletsResponse structure.
+type WalletSummary struct {
 	Owner       string `json:"owner"`
-	Budget      string `json:"budget"`
+	Wallet      string `json:"wallet"`
 	Limit       string `json:"limit"`
-	Allocated   string `json:"allocated"`
+	Budgeted    string `json:"budgeted"`
 	Unallocated string `json:"unallocated"`
 	Available   string `json:"available"`
 	Consumed    string `json:"consumed"`
