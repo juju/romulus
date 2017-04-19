@@ -38,11 +38,11 @@ type client struct {
 	h httpClient
 }
 
-// CreateBudget creates a new budget with the specified name and limit.
+// CreateWallet creates a new wallet with the specified name and limit.
 // The call returns the service's response message and an error if one occurred.
-func (c *client) CreateBudget(name string, limit string) (string, error) {
-	create := wireformat.CreateBudgetRequest{
-		Budget: name,
+func (c *client) CreateWallet(name string, limit string) (string, error) {
+	create := wireformat.CreateWalletRequest{
+		Wallet: name,
 		Limit:  limit,
 	}
 	var response string
@@ -50,10 +50,10 @@ func (c *client) CreateBudget(name string, limit string) (string, error) {
 	return response, err
 }
 
-// ListBudgets lists the budgets belonging to the current user.
-func (c *client) ListBudgets() (*wireformat.ListBudgetsResponse, error) {
-	list := wireformat.ListBudgetsRequest{}
-	var response wireformat.ListBudgetsResponse
+// ListWallets lists the wallets belonging to the current user.
+func (c *client) ListWallets() (*wireformat.ListWalletsResponse, error) {
+	list := wireformat.ListWalletsRequest{}
+	var response wireformat.ListWalletsResponse
 	err := c.doRequest(list, &response)
 	if err != nil {
 		return nil, err
@@ -61,10 +61,10 @@ func (c *client) ListBudgets() (*wireformat.ListBudgetsResponse, error) {
 	return &response, nil
 }
 
-// SetBudget updates the budget limit.
-func (c *client) SetBudget(budget, limit string) (string, error) {
-	set := wireformat.SetBudgetRequest{
-		Budget: budget,
+// SetWallet updates the wallet limit.
+func (c *client) SetWallet(wallet, limit string) (string, error) {
+	set := wireformat.SetWalletRequest{
+		Wallet: wallet,
 		Limit:  limit,
 	}
 	var response string
@@ -72,12 +72,12 @@ func (c *client) SetBudget(budget, limit string) (string, error) {
 	return response, err
 }
 
-// GetBudget returns the information of a particular budget.
-func (c *client) GetBudget(budget string) (*wireformat.BudgetWithAllocations, error) {
-	get := wireformat.GetBudgetRequest{
-		Budget: budget,
+// GetWallet returns the information of a particular wallet.
+func (c *client) GetWallet(wallet string) (*wireformat.WalletWithBudgets, error) {
+	get := wireformat.GetWalletRequest{
+		Wallet: wallet,
 	}
-	var response wireformat.BudgetWithAllocations
+	var response wireformat.WalletWithBudgets
 	err := c.doRequest(get, &response)
 	if err != nil {
 		return nil, err
@@ -85,10 +85,10 @@ func (c *client) GetBudget(budget string) (*wireformat.BudgetWithAllocations, er
 	return &response, nil
 }
 
-// CreateAllocation creates a new allocation in a specific budget.
-func (c *client) CreateAllocation(budget, limit string, model string) (string, error) {
-	create := wireformat.CreateAllocationRequest{
-		Budget: budget,
+// CreateBudget creates a new budget in a specific wallet.
+func (c *client) CreateBudget(wallet, limit string, model string) (string, error) {
+	create := wireformat.CreateBudgetRequest{
+		Wallet: wallet,
 		Limit:  limit,
 		Model:  model,
 	}
@@ -97,9 +97,9 @@ func (c *client) CreateAllocation(budget, limit string, model string) (string, e
 	return response, err
 }
 
-// UpdateAllocation updates the allocation associated with the specified model with new limit.
-func (c *client) UpdateAllocation(model, limit string) (string, error) {
-	create := wireformat.UpdateAllocationRequest{
+// UpdateBudget updates the budget associated with the specified model with new limit.
+func (c *client) UpdateBudget(model, limit string) (string, error) {
+	create := wireformat.UpdateBudgetRequest{
 		Limit: limit,
 		Model: model,
 	}
@@ -108,9 +108,9 @@ func (c *client) UpdateAllocation(model, limit string) (string, error) {
 	return response, err
 }
 
-// DeleteAllocation deletes the allocation associated with the specified model.
-func (c *client) DeleteAllocation(model string) (string, error) {
-	create := wireformat.DeleteAllocationRequest{
+// DeleteBudget deletes the budget associated with the specified model.
+func (c *client) DeleteBudget(model string) (string, error) {
+	create := wireformat.DeleteBudgetRequest{
 		Model: model,
 	}
 	var response string

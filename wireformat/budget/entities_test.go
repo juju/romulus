@@ -20,8 +20,8 @@ type BudgetSuite struct{}
 
 var _ = gc.Suite(&BudgetSuite{})
 
-func (t *BudgetSuite) TestAllocationSorting(c *gc.C) {
-	allocations := []budget.Allocation{{
+func (t *BudgetSuite) TestBudgetSorting(c *gc.C) {
+	budgets := []budget.Budget{{
 		Owner:    "user",
 		Limit:    "40",
 		Consumed: "10",
@@ -35,7 +35,7 @@ func (t *BudgetSuite) TestAllocationSorting(c *gc.C) {
 		Model:    "model1",
 	}}
 
-	expected := []budget.Allocation{{
+	expected := []budget.Budget{{
 		Owner:    "user",
 		Limit:    "40",
 		Consumed: "10",
@@ -49,6 +49,6 @@ func (t *BudgetSuite) TestAllocationSorting(c *gc.C) {
 		Model:    "model2",
 	}}
 
-	sort.Sort(budget.SortedAllocations(allocations))
-	c.Assert(allocations, gc.DeepEquals, expected)
+	sort.Sort(budget.SortedBudgets(budgets))
+	c.Assert(budgets, gc.DeepEquals, expected)
 }

@@ -33,8 +33,8 @@ type TSuite struct{}
 
 var _ = gc.Suite(&TSuite{})
 
-func (t *TSuite) TestCreateBudget(c *gc.C) {
-	expected := "Budget created successfully"
+func (t *TSuite) TestCreateWallet(c *gc.C) {
+	expected := "Wallet created successfully"
 	respBody, err := json.Marshal(expected)
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
@@ -42,7 +42,7 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateBudget("personal", "200")
+	response, err := client.CreateWallet("personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -50,45 +50,45 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
-					"budget": "personal",
+					"wallet": "personal",
 				},
 			}}})
 }
 
-func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "budget already exists"})
+func (t *TSuite) TestCreateWalletServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "wallet already exists"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateBudget("personal", "200")
-	c.Assert(err, gc.ErrorMatches, "budget already exists")
+	response, err := client.CreateWallet("personal", "200")
+	c.Assert(err, gc.ErrorMatches, "wallet already exists")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
-					"budget": "personal",
+					"wallet": "personal",
 				},
 			}}})
 }
 
-func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
+func (t *TSuite) TestCreateWalletRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateBudget("personal", "200")
+	response, err := client.CreateWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -96,20 +96,20 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
-					"budget": "personal",
+					"wallet": "personal",
 				},
 			}}})
 }
 
-func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
+func (t *TSuite) TestCreateWalletUnavail(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusServiceUnavailable,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateBudget("personal", "200")
+	response, err := client.CreateWallet("personal", "200")
 	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -117,21 +117,21 @@ func (t *TSuite) TestCreateBudgetUnavail(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
-					"budget": "personal",
+					"wallet": "personal",
 				},
 			}}})
 }
 
-func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
+func (t *TSuite) TestCreateWalletConnRefused(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusOK,
 	}
 	httpClient.SetErrors(errors.New("Connection refused"))
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateBudget("personal", "200")
+	response, err := client.CreateWallet("personal", "200")
 	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -139,51 +139,51 @@ func (t *TSuite) TestCreateBudgetConnRefused(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
-					"budget": "personal",
+					"wallet": "personal",
 				},
 			}}})
 }
 
-func (t *TSuite) TestListBudgets(c *gc.C) {
-	expected := &wireformat.ListBudgetsResponse{
-		Budgets: wireformat.BudgetSummaries{
-			wireformat.BudgetSummary{
+func (t *TSuite) TestListWallets(c *gc.C) {
+	expected := &wireformat.ListWalletsResponse{
+		Wallets: wireformat.WalletSummaries{
+			wireformat.WalletSummary{
 				Owner:       "bob",
-				Budget:      "personal",
+				Wallet:      "personal",
 				Limit:       "50",
-				Allocated:   "30",
+				Budgeted:    "30",
 				Unallocated: "20",
 				Available:   "45",
 				Consumed:    "5",
 				Default:     true,
 			},
-			wireformat.BudgetSummary{
+			wireformat.WalletSummary{
 				Owner:       "bob",
-				Budget:      "work",
+				Wallet:      "work",
 				Limit:       "200",
-				Allocated:   "100",
+				Budgeted:    "100",
 				Unallocated: "100",
 				Available:   "150",
 				Consumed:    "50",
 				Default:     false,
 			},
-			wireformat.BudgetSummary{
+			wireformat.WalletSummary{
 				Owner:       "bob",
-				Budget:      "team",
+				Wallet:      "team",
 				Limit:       "50",
-				Allocated:   "10",
+				Budgeted:    "10",
 				Unallocated: "40",
 				Available:   "40",
 				Consumed:    "10",
 				Default:     false,
 			},
 		},
-		Total: wireformat.BudgetTotals{
+		Total: wireformat.WalletTotals{
 			Limit:       "300",
-			Allocated:   "140",
+			Budgeted:    "140",
 			Available:   "235",
 			Unallocated: "160",
 			Consumed:    "65",
@@ -197,7 +197,7 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.ListBudgets()
+	response, err := client.ListWallets()
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.DeepEquals, expected)
 	httpClient.CheckCalls(c,
@@ -205,39 +205,39 @@ func (t *TSuite) TestListBudgets(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestListBudgetsServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "budget already exists"})
+func (t *TSuite) TestListWalletsServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "wallet already exists"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusNotFound,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.ListBudgets()
-	c.Assert(err, gc.ErrorMatches, "budget already exists")
+	response, err := client.ListWallets()
+	c.Assert(err, gc.ErrorMatches, "wallet already exists")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestListBudgetsRequestError(c *gc.C) {
+func (t *TSuite) TestListWalletsRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.ListBudgets()
+	response, err := client.ListWallets()
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
@@ -245,13 +245,13 @@ func (t *TSuite) TestListBudgetsRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget",
+				"https://api.jujucharms.com/omnibus/v3/wallet",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestSetBudget(c *gc.C) {
-	expected := "Budget updated successfully"
+func (t *TSuite) TestSetWallet(c *gc.C) {
+	expected := "Wallet updated successfully"
 	respBody, err := json.Marshal(expected)
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
@@ -259,7 +259,7 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.SetBudget("personal", "200")
+	response, err := client.SetWallet("personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -267,7 +267,7 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -276,23 +276,23 @@ func (t *TSuite) TestSetBudget(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "cannot update budget"})
+func (t *TSuite) TestSetWalletServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "cannot update wallet"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.SetBudget("personal", "200")
-	c.Assert(err, gc.ErrorMatches, "cannot update budget")
+	response, err := client.SetWallet("personal", "200")
+	c.Assert(err, gc.ErrorMatches, "cannot update wallet")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -301,13 +301,13 @@ func (t *TSuite) TestSetBudgetServerError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
+func (t *TSuite) TestSetWalletRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.SetBudget("personal", "200")
+	response, err := client.SetWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -315,7 +315,7 @@ func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -324,17 +324,17 @@ func (t *TSuite) TestSetBudgetRequestError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestGetBudget(c *gc.C) {
-	expected := &wireformat.BudgetWithAllocations{
+func (t *TSuite) TestGetWallet(c *gc.C) {
+	expected := &wireformat.WalletWithBudgets{
 		Limit: "4000.00",
-		Total: wireformat.BudgetTotals{
-			Allocated:   "2200.00",
+		Total: wireformat.WalletTotals{
+			Budgeted:    "2200.00",
 			Unallocated: "1800.00",
 			Available:   "1100,00",
 			Consumed:    "1100.0",
 			Usage:       "50%",
 		},
-		Allocations: []wireformat.Allocation{{
+		Budgets: []wireformat.Budget{{
 			Owner:    "user.joe",
 			Limit:    "1200.00",
 			Consumed: "500.00",
@@ -356,7 +356,7 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.GetBudget("personal")
+	response, err := client.GetWallet("personal")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.DeepEquals, expected)
 	httpClient.CheckCalls(c,
@@ -364,39 +364,39 @@ func (t *TSuite) TestGetBudget(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestGetBudgetServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "budget not found"})
+func (t *TSuite) TestGetWalletServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "wallet not found"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusNotFound,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.GetBudget("personal")
-	c.Assert(err, gc.ErrorMatches, "budget not found")
+	response, err := client.GetWallet("personal")
+	c.Assert(err, gc.ErrorMatches, "wallet not found")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestGetBudgetRequestError(c *gc.C) {
+func (t *TSuite) TestGetWalletRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.GetBudget("personal")
+	response, err := client.GetWallet("personal")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
@@ -404,13 +404,13 @@ func (t *TSuite) TestGetBudgetRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"GET",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestCreateAllocation(c *gc.C) {
-	expected := "Allocation created successfully"
+func (t *TSuite) TestCreateBudget(c *gc.C) {
+	expected := "Budget created successfully"
 	respBody, err := json.Marshal(expected)
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
@@ -418,7 +418,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model")
+	response, err := client.CreateBudget("personal", "200", "model")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -426,7 +426,7 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
 				map[string]interface{}{
 					"limit": "200",
 					"model": "model",
@@ -434,23 +434,23 @@ func (t *TSuite) TestCreateAllocation(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "cannot create allocation"})
+func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "cannot create budget"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model")
-	c.Assert(err, gc.ErrorMatches, "cannot create allocation")
+	response, err := client.CreateBudget("personal", "200", "model")
+	c.Assert(err, gc.ErrorMatches, "cannot create budget")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
 				map[string]interface{}{
 					"limit": "200",
 					"model": "model",
@@ -458,13 +458,13 @@ func (t *TSuite) TestCreateAllocationServerError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
+func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.CreateAllocation("personal", "200", "model")
+	response, err := client.CreateBudget("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -472,7 +472,7 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/budget/personal/allocation",
+				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
 				map[string]interface{}{
 					"limit": "200",
 					"model": "model",
@@ -480,8 +480,8 @@ func (t *TSuite) TestCreateAllocationRequestError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestUpdateAllocation(c *gc.C) {
-	expected := "Allocation updated."
+func (t *TSuite) TestUpdateBudget(c *gc.C) {
+	expected := "Budget updated."
 	respBody, err := json.Marshal(expected)
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
@@ -489,7 +489,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "200")
+	response, err := client.UpdateBudget("model-uuid", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -497,7 +497,7 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -506,23 +506,23 @@ func (t *TSuite) TestUpdateAllocation(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "cannot update allocation"})
+func (t *TSuite) TestUpdateBudgetServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "cannot update budget"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "200")
-	c.Assert(err, gc.ErrorMatches, "cannot update allocation")
+	response, err := client.UpdateBudget("model-uuid", "200")
+	c.Assert(err, gc.ErrorMatches, "cannot update budget")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -531,13 +531,13 @@ func (t *TSuite) TestUpdateAllocationServerError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
+func (t *TSuite) TestUpdateBudgetRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateAllocation("model-uuid", "200")
+	response, err := client.UpdateBudget("model-uuid", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -545,7 +545,7 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"PATCH",
 				"application/json",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{
 					"update": map[string]interface{}{
 						"limit": "200",
@@ -554,8 +554,8 @@ func (t *TSuite) TestUpdateAllocationRequestError(c *gc.C) {
 			}}})
 }
 
-func (t *TSuite) TestDeleteAllocation(c *gc.C) {
-	expected := "Allocation deleted."
+func (t *TSuite) TestDeleteBudget(c *gc.C) {
+	expected := "Budget deleted."
 	respBody, err := json.Marshal(expected)
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
@@ -563,7 +563,7 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid")
+	response, err := client.DeleteBudget("model-uuid")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -571,39 +571,39 @@ func (t *TSuite) TestDeleteAllocation(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestDeleteAllocationServerError(c *gc.C) {
-	respBody, err := json.Marshal(httpErr{Error: "cannot delete allocation"})
+func (t *TSuite) TestDeleteBudgetServerError(c *gc.C) {
+	respBody, err := json.Marshal(httpErr{Error: "cannot delete budget"})
 	c.Assert(err, jc.ErrorIsNil)
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid")
-	c.Assert(err, gc.ErrorMatches, "cannot delete allocation")
+	response, err := client.DeleteBudget("model-uuid")
+	c.Assert(err, gc.ErrorMatches, "cannot delete budget")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{},
 			}}})
 }
 
-func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
+func (t *TSuite) TestDeleteBudgetRequestError(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.DeleteAllocation("model-uuid")
+	response, err := client.DeleteBudget("model-uuid")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -611,7 +611,7 @@ func (t *TSuite) TestDeleteAllocationRequestError(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"DELETE",
 				"",
-				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/allocation",
+				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{},
 			}}})
 }
