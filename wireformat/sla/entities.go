@@ -19,4 +19,5 @@ type SLARequest struct {
 type SLAResponse struct {
 	Owner       string             `json:"owner"`
 	Credentials *macaroon.Macaroon `json:"credentials"`
+	Message     string             `json:"message,omitempty"`
 }
