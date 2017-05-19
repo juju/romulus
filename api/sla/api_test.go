@@ -59,7 +59,11 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 
 	m, err := macaroon.New(nil, "", "")
 	c.Assert(err, jc.ErrorIsNil)
-	data, err := json.Marshal(sla.SLAResponse{Owner: "bob", Credentials: m})
+	data, err := json.Marshal(sla.SLAResponse{
+		Owner:       "bob",
+		Credentials: m,
+		Message:     "info",
+	})
 	c.Assert(err, jc.ErrorIsNil)
 
 	httpClient := &mockHttpClient{}
@@ -69,7 +73,11 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 	c.Assert(err, jc.ErrorIsNil)
 	resp, err := authClient.Authorize(modelUUID.String(), level, "")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(resp, jc.DeepEquals, &sla.SLAResponse{Owner: "bob", Credentials: m})
+	c.Assert(resp, jc.DeepEquals, &sla.SLAResponse{
+		Owner:       "bob",
+		Credentials: m,
+		Message:     "info",
+	})
 }
 
 type mockHttpClient struct {
