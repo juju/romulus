@@ -489,7 +489,7 @@ func (t *TSuite) TestUpdateBudget(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateBudget("model-uuid", "200")
+	response, err := client.UpdateBudget("model-uuid", "personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
@@ -500,7 +500,8 @@ func (t *TSuite) TestUpdateBudget(c *gc.C) {
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{
 					"update": map[string]interface{}{
-						"limit": "200",
+						"limit":  "200",
+						"wallet": "personal",
 					},
 				},
 			}}})
@@ -514,7 +515,7 @@ func (t *TSuite) TestUpdateBudgetServerError(c *gc.C) {
 		RespBody: respBody,
 	}
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateBudget("model-uuid", "200")
+	response, err := client.UpdateBudget("model-uuid", "work", "200")
 	c.Assert(err, gc.ErrorMatches, "cannot update budget")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
@@ -525,7 +526,8 @@ func (t *TSuite) TestUpdateBudgetServerError(c *gc.C) {
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
 				map[string]interface{}{
 					"update": map[string]interface{}{
-						"limit": "200",
+						"limit":  "200",
+						"wallet": "work",
 					},
 				},
 			}}})
@@ -537,7 +539,7 @@ func (t *TSuite) TestUpdateBudgetRequestError(c *gc.C) {
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
 	client := budget.NewClient(httpClient)
-	response, err := client.UpdateBudget("model-uuid", "200")
+	response, err := client.UpdateBudget("model-uuid", "", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,

@@ -106,8 +106,9 @@ func (r CreateBudgetRequest) Body() interface{} { return r }
 // UpdateBudgetRequest defines a request to update a budget
 // associated with a model.
 type UpdateBudgetRequest struct {
-	Model string `json:"-"`
-	Limit string `json:"limit"`
+	Model  string `json:"-"`
+	Limit  string `json:"limit,omitempty"`
+	Wallet string `json:"wallet,omitempty"`
 }
 
 // ContentType return the content-type header to be set for the request.

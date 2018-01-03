@@ -98,10 +98,11 @@ func (c *client) CreateBudget(wallet, limit string, model string) (string, error
 }
 
 // UpdateBudget updates the budget associated with the specified model with new limit.
-func (c *client) UpdateBudget(model, limit string) (string, error) {
+func (c *client) UpdateBudget(model, wallet, limit string) (string, error) {
 	create := wireformat.UpdateBudgetRequest{
-		Limit: limit,
-		Model: model,
+		Limit:  limit,
+		Model:  model,
+		Wallet: wallet,
 	}
 	var response string
 	err := c.doRequest(create, &response)
