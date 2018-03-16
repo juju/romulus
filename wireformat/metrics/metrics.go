@@ -25,9 +25,10 @@ type MetricBatch struct {
 
 // Metric represents a single Metric.
 type Metric struct {
-	Key   string    `json:"key"`
-	Value string    `json:"value"`
-	Time  time.Time `json:"time"`
+	Key    string            `json:"key"`
+	Value  string            `json:"value"`
+	Time   time.Time         `json:"time"`
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 // Response represents the response from the metrics collector.
