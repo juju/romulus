@@ -40,3 +40,16 @@ func IsNotAvail(err error) bool {
 	_, ok := err.(NotAvailError)
 	return ok
 }
+
+// UserValidationFailedError represents an error caused by failed user validation.
+type UserValidationFailedError struct {
+	Message string
+}
+
+func (e UserValidationFailedError) Error() string {
+	if e.Message != "" {
+		return e.Message
+	} else {
+		return fmt.Sprintf("user validation failed")
+	}
+}

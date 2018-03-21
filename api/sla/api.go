@@ -18,9 +18,13 @@ import (
 	"gopkg.in/macaroon-bakery.v1/httpbakery"
 )
 
-var DefaultURL = "https://api.jujucharms.com/omnibus/v3"
+var (
+	DefaultURL                    = "https://api.jujucharms.com/omnibus/v3"
+	userValidationFailedErrorCode = "user validation failed"
+)
 
 type httpErrorResponse struct {
+	Code  string `json:"code"`
 	Error string `json:"error"`
 }
 
@@ -113,7 +117,15 @@ func (c *client) Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResp
 
 	if response.StatusCode != http.StatusOK {
 		respErr := httpErrorResponse{}
-		json.NewDecoder(response.Body).Decode(&respErr)
+		err = json.NewDecoder(response.Body).Decode(&respErr)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		if respErr.Code == userValidationFailedErrorCode {
+			return nil, common.UserValidationFailedError{
+				Message: respErr.Error,
+			}
+		}
 		return nil, common.HTTPError{
 			StatusCode: response.StatusCode,
 			Message:    respErr.Error,
