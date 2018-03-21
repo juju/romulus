@@ -14,7 +14,7 @@ import (
 	jc "github.com/juju/testing/checkers"
 	"github.com/juju/utils"
 	gc "gopkg.in/check.v1"
-	"gopkg.in/macaroon.v1"
+	"gopkg.in/macaroon.v2-unstable"
 
 	api "github.com/juju/romulus/api/plan"
 	wireformat "github.com/juju/romulus/wireformat/plan"
@@ -58,7 +58,7 @@ func (s *clientSuite) TestBaseURL(c *gc.C) {
 	s.httpClient.CheckCall(c, 0, "Do", "https://example.com/charm?charm-url=bob%2Fuptime")
 	s.httpClient.ResetCalls()
 
-	m, err := macaroon.New(nil, "", "")
+	m, err := macaroon.New(nil, nil, "")
 	c.Assert(err, jc.ErrorIsNil)
 	data, err := json.Marshal(m)
 	c.Assert(err, jc.ErrorIsNil)
@@ -123,7 +123,7 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 	service := "test-charm"
 	plan := utils.MustNewUUID()
 
-	m, err := macaroon.New(nil, "", "")
+	m, err := macaroon.New(nil, nil, "")
 	c.Assert(err, jc.ErrorIsNil)
 	data, err := json.Marshal(m)
 	c.Assert(err, jc.ErrorIsNil)
