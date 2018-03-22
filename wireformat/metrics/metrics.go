@@ -14,6 +14,7 @@ import (
 type MetricBatch struct {
 	UUID                string    `json:"uuid"`
 	ModelUUID           string    `json:"env-uuid"`
+	ModelName           string    `json:"model-name"`
 	UnitName            string    `json:"unit-name"`
 	CharmUrl            string    `json:"charm-url"`
 	Created             time.Time `json:"created"`
