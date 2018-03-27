@@ -15,7 +15,7 @@ import (
 	"github.com/juju/errors"
 	"github.com/juju/romulus/wireformat/common"
 	"github.com/juju/romulus/wireformat/sla"
-	"gopkg.in/macaroon-bakery.v1/httpbakery"
+	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
 )
 
 var DefaultURL = "https://api.jujucharms.com/omnibus/v3"

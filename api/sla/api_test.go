@@ -14,7 +14,7 @@ import (
 	jc "github.com/juju/testing/checkers"
 	"github.com/juju/utils"
 	gc "gopkg.in/check.v1"
-	"gopkg.in/macaroon.v1"
+	"gopkg.in/macaroon.v2-unstable"
 
 	api "github.com/juju/romulus/api/sla"
 	"github.com/juju/romulus/wireformat/sla"
@@ -41,7 +41,7 @@ func (s *clientSuite) TestBaseURL(c *gc.C) {
 	client, err := api.NewClient(api.HTTPClient(s.httpClient), api.BaseURL("https://example.com"))
 	c.Assert(err, jc.ErrorIsNil)
 
-	m, err := macaroon.New(nil, "", "")
+	m, err := macaroon.New(nil, nil, "")
 	c.Assert(err, jc.ErrorIsNil)
 	data, err := json.Marshal(m)
 	c.Assert(err, jc.ErrorIsNil)
@@ -57,7 +57,7 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 	modelUUID := utils.MustNewUUID()
 	level := "essential"
 
-	m, err := macaroon.New(nil, "", "")
+	m, err := macaroon.New(nil, nil, "")
 	c.Assert(err, jc.ErrorIsNil)
 	data, err := json.Marshal(sla.SLAResponse{
 		Owner:       "bob",
@@ -73,11 +73,11 @@ func (s *clientSuite) TestAuthorize(c *gc.C) {
 	c.Assert(err, jc.ErrorIsNil)
 	resp, err := authClient.Authorize(modelUUID.String(), level, "")
 	c.Assert(err, jc.ErrorIsNil)
-	c.Assert(resp, jc.DeepEquals, &sla.SLAResponse{
-		Owner:       "bob",
-		Credentials: m,
-		Message:     "info",
-	})
+	c.Assert(resp.Credentials.UnmarshaledAs(), gc.Equals, macaroon.MarshalV1|macaroon.MarshalJSON|macaroon.MarshalJSONObject)
+	c.Assert(resp.Owner, gc.Equals, "bob")
+	c.Assert(resp.Message, gc.Equals, "info")
+	c.Assert(resp.Credentials.Signature(), jc.DeepEquals, m.Signature())
+
 }
 
 type mockHttpClient struct {
