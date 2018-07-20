@@ -41,7 +41,8 @@ func (t *TSuite) TestCreateWallet(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateWallet("personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
@@ -58,6 +59,32 @@ func (t *TSuite) TestCreateWallet(c *gc.C) {
 			}}})
 }
 
+func (t *TSuite) TestCreateWalletAPIRoot(c *gc.C) {
+	expected := "Wallet created successfully"
+	respBody, err := json.Marshal(expected)
+	c.Assert(err, jc.ErrorIsNil)
+	httpClient := &mockClient{
+		RespCode: http.StatusOK,
+		RespBody: respBody,
+	}
+	client, err := budget.NewClient(budget.HTTPClient(httpClient), budget.APIRoot("http://httpbin.org"))
+	c.Assert(err, jc.ErrorIsNil)
+	response, err := client.CreateWallet("personal", "200")
+	c.Assert(err, jc.ErrorIsNil)
+	c.Assert(response, gc.Equals, expected)
+	httpClient.CheckCalls(c,
+		[]jujutesting.StubCall{{
+			"DoWithBody",
+			[]interface{}{"POST",
+				"application/json",
+				"http://httpbin.org/wallet",
+				map[string]interface{}{
+					"limit":  "200",
+					"wallet": "personal",
+				},
+			}}})
+}
+
 func (t *TSuite) TestCreateWalletServerError(c *gc.C) {
 	respBody, err := json.Marshal(httpErr{Error: "wallet already exists"})
 	c.Assert(err, jc.ErrorIsNil)
@@ -65,7 +92,8 @@ func (t *TSuite) TestCreateWalletServerError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, "wallet already exists")
 	c.Assert(response, gc.Equals, "")
@@ -87,7 +115,8 @@ func (t *TSuite) TestCreateWalletRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
@@ -108,7 +137,8 @@ func (t *TSuite) TestCreateWalletUnavail(c *gc.C) {
 	httpClient := &mockClient{
 		RespCode: http.StatusServiceUnavailable,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateWallet("personal", "200")
 	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
@@ -130,7 +160,8 @@ func (t *TSuite) TestCreateWalletConnRefused(c *gc.C) {
 		RespCode: http.StatusOK,
 	}
 	httpClient.SetErrors(errors.New("Connection refused"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateWallet("personal", "200")
 	c.Assert(common.IsNotAvail(err), jc.IsTrue)
 	c.Assert(response, gc.Equals, "")
@@ -196,7 +227,8 @@ func (t *TSuite) TestListWallets(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.ListWallets()
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.DeepEquals, expected)
@@ -217,7 +249,8 @@ func (t *TSuite) TestListWalletsServerError(c *gc.C) {
 		RespCode: http.StatusNotFound,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.ListWallets()
 	c.Assert(err, gc.ErrorMatches, "wallet already exists")
 	c.Assert(response, gc.IsNil)
@@ -236,7 +269,8 @@ func (t *TSuite) TestListWalletsRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.ListWallets()
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.IsNil)
@@ -258,7 +292,8 @@ func (t *TSuite) TestSetWallet(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.SetWallet("personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
@@ -283,7 +318,8 @@ func (t *TSuite) TestSetWalletServerError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.SetWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, "cannot update wallet")
 	c.Assert(response, gc.Equals, "")
@@ -306,7 +342,8 @@ func (t *TSuite) TestSetWalletRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.SetWallet("personal", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
@@ -355,7 +392,8 @@ func (t *TSuite) TestGetWallet(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.GetWallet("personal")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.DeepEquals, expected)
@@ -376,7 +414,8 @@ func (t *TSuite) TestGetWalletServerError(c *gc.C) {
 		RespCode: http.StatusNotFound,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.GetWallet("personal")
 	c.Assert(err, gc.ErrorMatches, "wallet not found")
 	c.Assert(response, gc.IsNil)
@@ -395,7 +434,8 @@ func (t *TSuite) TestGetWalletRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.GetWallet("personal")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.IsNil)
@@ -417,7 +457,8 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateBudget("personal", "200", "model")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
@@ -441,7 +482,8 @@ func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateBudget("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, "cannot create budget")
 	c.Assert(response, gc.Equals, "")
@@ -463,7 +505,8 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.CreateBudget("personal", "200", "model")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
@@ -488,7 +531,8 @@ func (t *TSuite) TestUpdateBudget(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.UpdateBudget("model-uuid", "personal", "200")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
@@ -514,7 +558,8 @@ func (t *TSuite) TestUpdateBudgetServerError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.UpdateBudget("model-uuid", "work", "200")
 	c.Assert(err, gc.ErrorMatches, "cannot update budget")
 	c.Assert(response, gc.Equals, "")
@@ -538,7 +583,8 @@ func (t *TSuite) TestUpdateBudgetRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.UpdateBudget("model-uuid", "", "200")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")
@@ -564,7 +610,8 @@ func (t *TSuite) TestDeleteBudget(c *gc.C) {
 		RespCode: http.StatusOK,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.DeleteBudget("model-uuid")
 	c.Assert(err, jc.ErrorIsNil)
 	c.Assert(response, gc.Equals, expected)
@@ -585,7 +632,8 @@ func (t *TSuite) TestDeleteBudgetServerError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 		RespBody: respBody,
 	}
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.DeleteBudget("model-uuid")
 	c.Assert(err, gc.ErrorMatches, "cannot delete budget")
 	c.Assert(response, gc.Equals, "")
@@ -604,7 +652,8 @@ func (t *TSuite) TestDeleteBudgetRequestError(c *gc.C) {
 		RespCode: http.StatusBadRequest,
 	}
 	httpClient.SetErrors(errors.New("bogus error"))
-	client := budget.NewClient(httpClient)
+	client, err := budget.NewClient(budget.HTTPClient(httpClient))
+	c.Assert(err, jc.ErrorIsNil)
 	response, err := client.DeleteBudget("model-uuid")
 	c.Assert(err, gc.ErrorMatches, ".*bogus error")
 	c.Assert(response, gc.Equals, "")

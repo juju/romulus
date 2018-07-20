@@ -3,12 +3,6 @@
 
 package budget
 
-import (
-	"fmt"
-)
-
-var BaseURL = "https://api.jujucharms.com/omnibus/v3"
-
 // CreateWalletRequest is used in the requests to the budget service
 // for creating the specified wallet.
 type CreateWalletRequest struct {
@@ -28,8 +22,8 @@ func (c CreateWalletRequest) Body() interface{} {
 }
 
 // URL returns the URL of the request.
-func (CreateWalletRequest) URL() string {
-	return fmt.Sprintf("%s/wallet", BaseURL)
+func (CreateWalletRequest) URL(apiRoot string) string {
+	return apiRoot + "/wallet"
 }
 
 // ListWalletsRequest defines a request to the budgets service
@@ -40,8 +34,8 @@ type ListWalletsRequest struct{}
 func (ListWalletsRequest) Method() string { return "GET" }
 
 // URL returns the URL of the request.
-func (ListWalletsRequest) URL() string {
-	return fmt.Sprintf("%s/wallet", BaseURL)
+func (ListWalletsRequest) URL(apiRoot string) string {
+	return apiRoot + "/wallet"
 }
 
 // SetWalletRequest defines a request that updates the limit of
@@ -65,8 +59,8 @@ func (r SetWalletRequest) Body() interface{} {
 }
 
 // URL returns the URL for the request.
-func (r SetWalletRequest) URL() string {
-	return fmt.Sprintf("%s/wallet/%s", BaseURL, r.Wallet)
+func (r SetWalletRequest) URL(apiRoot string) string {
+	return apiRoot + "/wallet/" + r.Wallet
 }
 
 // GetWalletRequest defines a request that retrieves a specific wallet.
@@ -75,8 +69,8 @@ type GetWalletRequest struct {
 }
 
 // URL returns the URL for the request.
-func (r GetWalletRequest) URL() string {
-	return fmt.Sprintf("%s/wallet/%s", BaseURL, r.Wallet)
+func (r GetWalletRequest) URL(apiRoot string) string {
+	return apiRoot + "/wallet/" + r.Wallet
 }
 
 // Method returns the method for the request.
@@ -90,8 +84,8 @@ type CreateBudgetRequest struct {
 }
 
 // URL returns the URL for the request.
-func (r CreateBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/wallet/%s/budget", BaseURL, r.Wallet)
+func (r CreateBudgetRequest) URL(apiRoot string) string {
+	return apiRoot + "/wallet/" + r.Wallet + "/budget"
 }
 
 // ContentType return the content-type header to be set for the request.
@@ -115,8 +109,8 @@ type UpdateBudgetRequest struct {
 func (UpdateBudgetRequest) ContentType() string { return "application/json" }
 
 // URL returns the URL for the request.
-func (r UpdateBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/budget", BaseURL, r.Model)
+func (r UpdateBudgetRequest) URL(apiRoot string) string {
+	return apiRoot + "/model/" + r.Model + "/budget"
 }
 
 // Method returns the method for the request.
@@ -136,8 +130,8 @@ type DeleteBudgetRequest struct {
 }
 
 // URL returns the URL for the request.
-func (r DeleteBudgetRequest) URL() string {
-	return fmt.Sprintf("%s/model/%s/budget", BaseURL, r.Model)
+func (r DeleteBudgetRequest) URL(apiRoot string) string {
+	return apiRoot + "/model/" + r.Model + "/budget"
 }
 
 // Method returns the method for the request.

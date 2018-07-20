@@ -13,12 +13,12 @@ import (
 	"net/url"
 
 	"github.com/juju/errors"
+	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
+
+	"github.com/juju/romulus"
 	"github.com/juju/romulus/wireformat/common"
 	"github.com/juju/romulus/wireformat/sla"
-	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
 )
-
-var DefaultURL = "https://api.jujucharms.com/omnibus/v3"
 
 type httpErrorResponse struct {
 	Error string `json:"error"`
@@ -39,7 +39,7 @@ type httpClient interface {
 // client is the implementation of the Client interface.
 type client struct {
 	client  httpClient
-	baseURL string
+	apiRoot string
 }
 
 // ClientOption defines a function which configures a Client.
@@ -54,10 +54,10 @@ func HTTPClient(c httpClient) func(h *client) error {
 	}
 }
 
-// BaseURL sets the base url for the api client.
-func BaseURL(url string) func(h *client) error {
+// APIRoot sets the base url for the api client.
+func APIRoot(apiRoot string) func(h *client) error {
 	return func(h *client) error {
-		h.baseURL = url
+		h.apiRoot = apiRoot
 		return nil
 	}
 }
@@ -66,7 +66,7 @@ func BaseURL(url string) func(h *client) error {
 func NewClient(options ...ClientOption) (*client, error) {
 	c := &client{
 		client:  httpbakery.NewClient(),
-		baseURL: DefaultURL,
+		apiRoot: romulus.DefaultAPIRoot,
 	}
 
 	for _, option := range options {
@@ -81,7 +81,7 @@ func NewClient(options ...ClientOption) (*client, error) {
 
 // Authorize obtains an sla authorization.
 func (c *client) Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResponse, error) {
-	u, err := url.Parse(c.baseURL + "/sla/authorize")
+	u, err := url.Parse(c.apiRoot + "/sla/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
