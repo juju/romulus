@@ -48,8 +48,8 @@ func (s *clientSuite) SetUpTest(c *gc.C) {
 
 }
 
-func (s *clientSuite) TestBaseURL(c *gc.C) {
-	client, err := api.NewClient(api.HTTPClient(s.httpClient), api.BaseURL("https://example.com"))
+func (s *clientSuite) TestAPIRoot(c *gc.C) {
+	client, err := api.NewClient(api.HTTPClient(s.httpClient), api.APIRoot("https://example.com"))
 	c.Assert(err, jc.ErrorIsNil)
 
 	s.httpClient.status = http.StatusNotFound

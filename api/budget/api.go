@@ -14,7 +14,9 @@ import (
 	"strings"
 
 	"github.com/juju/errors"
+	"gopkg.in/macaroon-bakery.v1/httpbakery"
 
+	"github.com/juju/romulus"
 	wireformat "github.com/juju/romulus/wireformat/budget"
 	"github.com/juju/romulus/wireformat/common"
 )
@@ -27,15 +29,46 @@ type httpClient interface {
 	DoWithBody(*http.Request, io.ReadSeeker) (*http.Response, error)
 }
 
-// NewClient returns a new budget API client using the provided http client.
-func NewClient(c httpClient) *client {
-	return &client{
-		h: c,
+type client struct {
+	apiRoot string
+	h       httpClient
+}
+
+// ClientOption defines a function which configures a Client.
+type ClientOption func(h *client) error
+
+// HTTPClient returns a function that sets the http client used by the API
+// (e.g. if we want to use TLS).
+func HTTPClient(h httpClient) func(h *client) error {
+	return func(c *client) error {
+		c.h = h
+		return nil
 	}
 }
 
-type client struct {
-	h httpClient
+// APIRoot sets the base url for the api client.
+func APIRoot(apiRoot string) func(h *client) error {
+	return func(c *client) error {
+		c.apiRoot = apiRoot
+		return nil
+	}
+}
+
+// NewClient returns a new budget API client using the provided http client.
+func NewClient(options ...ClientOption) (*client, error) {
+	c := &client{
+		h:       httpbakery.NewClient(),
+		apiRoot: romulus.DefaultAPIRoot,
+	}
+
+	for _, option := range options {
+		err := option(c)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+	}
+
+	return c, nil
 }
 
 // CreateWallet creates a new wallet with the specified name and limit.
@@ -122,7 +155,7 @@ func (c *client) DeleteBudget(model string) (string, error) {
 // hasURL is an interface implemented by request structures that
 // modify the request URL.
 type hasURL interface {
-	URL() string
+	URL(apiRoot string) string
 }
 
 // hasBody is an interface implemented by requests that send
@@ -151,7 +184,7 @@ type hasContentType interface {
 func (c *client) doRequest(req interface{}, result interface{}) error {
 	reqURL := ""
 	if urlP, ok := req.(hasURL); ok {
-		reqURL = urlP.URL()
+		reqURL = urlP.URL(c.apiRoot)
 	} else {
 		return errors.Errorf("unknown request URL")
 	}

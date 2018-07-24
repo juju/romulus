@@ -16,10 +16,9 @@ import (
 	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
 	"gopkg.in/macaroon.v2-unstable"
 
+	"github.com/juju/romulus"
 	wireformat "github.com/juju/romulus/wireformat/plan"
 )
-
-var DefaultURL = "https://api.jujucharms.com/omnibus/v2"
 
 // Client defines the interface available to clients of the plan api.
 type Client interface {
@@ -49,7 +48,7 @@ type httpClient interface {
 // client is the implementation of the Client interface.
 type client struct {
 	client  httpClient
-	baseURL string
+	apiRoot string
 }
 
 // ClientOption defines a function which configures a Client.
@@ -64,10 +63,10 @@ func HTTPClient(c httpClient) func(h *client) error {
 	}
 }
 
-// BaseURL sets the base url for the api client.
-func BaseURL(url string) func(h *client) error {
+// APIRoot sets the base url for the api client.
+func APIRoot(url string) func(h *client) error {
 	return func(h *client) error {
-		h.baseURL = url
+		h.apiRoot = url
 		return nil
 	}
 }
@@ -81,7 +80,7 @@ func NewAuthorizationClient(options ...ClientOption) (AuthorizationClient, error
 func NewClient(options ...ClientOption) (*client, error) {
 	c := &client{
 		client:  httpbakery.NewClient(),
-		baseURL: DefaultURL,
+		apiRoot: romulus.DefaultAPIRoot,
 	}
 
 	for _, option := range options {
@@ -96,7 +95,7 @@ func NewClient(options ...ClientOption) (*client, error) {
 
 // GetAssociatedPlans returns the default plan for the specified charm.
 func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) {
-	u, err := url.Parse(c.baseURL + "/charm")
+	u, err := url.Parse(c.apiRoot + "/charm")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -132,7 +131,7 @@ func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) 
 
 // Authorize implements the AuthorizationClient.Authorize method.
 func (c *client) Authorize(environmentUUID, charmURL, serviceName, planURL string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error) {
-	u, err := url.Parse(c.baseURL + "/plan/authorize")
+	u, err := url.Parse(c.apiRoot + "/plan/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
