@@ -23,7 +23,7 @@ func (c CreateWalletRequest) Body() interface{} {
 
 // URL returns the URL of the request.
 func (CreateWalletRequest) URL(apiRoot string) string {
-	return apiRoot + "/wallet"
+	return apiRoot + "/v3/wallet"
 }
 
 // ListWalletsRequest defines a request to the budgets service
@@ -35,7 +35,7 @@ func (ListWalletsRequest) Method() string { return "GET" }
 
 // URL returns the URL of the request.
 func (ListWalletsRequest) URL(apiRoot string) string {
-	return apiRoot + "/wallet"
+	return apiRoot + "/v3/wallet"
 }
 
 // SetWalletRequest defines a request that updates the limit of
@@ -60,7 +60,7 @@ func (r SetWalletRequest) Body() interface{} {
 
 // URL returns the URL for the request.
 func (r SetWalletRequest) URL(apiRoot string) string {
-	return apiRoot + "/wallet/" + r.Wallet
+	return apiRoot + "/v3/wallet/" + r.Wallet
 }
 
 // GetWalletRequest defines a request that retrieves a specific wallet.
@@ -70,7 +70,7 @@ type GetWalletRequest struct {
 
 // URL returns the URL for the request.
 func (r GetWalletRequest) URL(apiRoot string) string {
-	return apiRoot + "/wallet/" + r.Wallet
+	return apiRoot + "/v3/wallet/" + r.Wallet
 }
 
 // Method returns the method for the request.
@@ -85,7 +85,7 @@ type CreateBudgetRequest struct {
 
 // URL returns the URL for the request.
 func (r CreateBudgetRequest) URL(apiRoot string) string {
-	return apiRoot + "/wallet/" + r.Wallet + "/budget"
+	return apiRoot + "/v3/wallet/" + r.Wallet + "/budget"
 }
 
 // ContentType return the content-type header to be set for the request.
@@ -110,7 +110,7 @@ func (UpdateBudgetRequest) ContentType() string { return "application/json" }
 
 // URL returns the URL for the request.
 func (r UpdateBudgetRequest) URL(apiRoot string) string {
-	return apiRoot + "/model/" + r.Model + "/budget"
+	return apiRoot + "/v3/model/" + r.Model + "/budget"
 }
 
 // Method returns the method for the request.
@@ -131,7 +131,7 @@ type DeleteBudgetRequest struct {
 
 // URL returns the URL for the request.
 func (r DeleteBudgetRequest) URL(apiRoot string) string {
-	return apiRoot + "/model/" + r.Model + "/budget"
+	return apiRoot + "/v3/model/" + r.Model + "/budget"
 }
 
 // Method returns the method for the request.

@@ -5,4 +5,4 @@
 package romulus
 
 // DefaultAPIRoot is the default URL prefix for metering & SLA API endpoints.
-var DefaultAPIRoot = "https://api.jujucharms.com/omnibus/v3"
+var DefaultAPIRoot = "https://api.jujucharms.com/omnibus"

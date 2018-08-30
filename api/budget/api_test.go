@@ -77,7 +77,7 @@ func (t *TSuite) TestCreateWalletAPIRoot(c *gc.C) {
 			"DoWithBody",
 			[]interface{}{"POST",
 				"application/json",
-				"http://httpbin.org/wallet",
+				"http://httpbin.org/v3/wallet",
 				map[string]interface{}{
 					"limit":  "200",
 					"wallet": "personal",
