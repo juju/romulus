@@ -38,7 +38,7 @@ func (s *clientSuite) SetUpTest(c *gc.C) {
 }
 
 func (s *clientSuite) TestBaseURL(c *gc.C) {
-	client, err := api.NewClient(api.HTTPClient(s.httpClient), api.BaseURL("https://example.com"))
+	client, err := api.NewClient(api.HTTPClient(s.httpClient), api.APIRoot("https://example.com"))
 	c.Assert(err, jc.ErrorIsNil)
 
 	m, err := macaroon.New(nil, nil, "")
@@ -50,7 +50,7 @@ func (s *clientSuite) TestBaseURL(c *gc.C) {
 	s.httpClient.status = http.StatusOK
 	_, err = client.Authorize("model", "level", "")
 	c.Assert(err, jc.ErrorIsNil)
-	s.httpClient.CheckCall(c, 0, "DoWithBody", "https://example.com/sla/authorize")
+	s.httpClient.CheckCall(c, 0, "DoWithBody", "https://example.com/v3/sla/authorize")
 }
 
 func (s *clientSuite) TestAuthorize(c *gc.C) {

@@ -81,7 +81,7 @@ func NewClient(options ...ClientOption) (*client, error) {
 
 // Authorize obtains an sla authorization.
 func (c *client) Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResponse, error) {
-	u, err := url.Parse(c.apiRoot + "/sla/authorize")
+	u, err := url.Parse(c.apiRoot + "/v3/sla/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

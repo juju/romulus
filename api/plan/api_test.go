@@ -55,7 +55,7 @@ func (s *clientSuite) TestAPIRoot(c *gc.C) {
 	s.httpClient.status = http.StatusNotFound
 	_, err = client.GetAssociatedPlans("bob/uptime")
 	c.Assert(err, gc.ErrorMatches, `failed to retrieve associated plans: received http response:  - code "Not Found"`)
-	s.httpClient.CheckCall(c, 0, "Do", "https://example.com/charm?charm-url=bob%2Fuptime")
+	s.httpClient.CheckCall(c, 0, "Do", "https://example.com/v3/charm?charm-url=bob%2Fuptime")
 	s.httpClient.ResetCalls()
 
 	m, err := macaroon.New(nil, nil, "")
@@ -67,7 +67,7 @@ func (s *clientSuite) TestAPIRoot(c *gc.C) {
 	s.httpClient.body = data
 	_, err = client.Authorize(utils.MustNewUUID().String(), "cs:trusty/test-charm-0", "test-charm", utils.MustNewUUID().String(), nil)
 	c.Assert(err, jc.ErrorIsNil)
-	s.httpClient.CheckCall(c, 0, "DoWithBody", "https://example.com/plan/authorize")
+	s.httpClient.CheckCall(c, 0, "DoWithBody", "https://example.com/v3/plan/authorize")
 }
 
 func (s *clientSuite) TestGet(c *gc.C) {

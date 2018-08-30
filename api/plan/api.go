@@ -95,7 +95,7 @@ func NewClient(options ...ClientOption) (*client, error) {
 
 // GetAssociatedPlans returns the default plan for the specified charm.
 func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) {
-	u, err := url.Parse(c.apiRoot + "/charm")
+	u, err := url.Parse(c.apiRoot + "/v3/charm")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -131,7 +131,7 @@ func (c *client) GetAssociatedPlans(charmURL string) ([]wireformat.Plan, error) 
 
 // Authorize implements the AuthorizationClient.Authorize method.
 func (c *client) Authorize(environmentUUID, charmURL, serviceName, planURL string, visitWebPage func(*url.URL) error) (*macaroon.Macaroon, error) {
-	u, err := url.Parse(c.apiRoot + "/plan/authorize")
+	u, err := url.Parse(c.apiRoot + "/v3/plan/authorize")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
