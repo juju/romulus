@@ -5,7 +5,7 @@
 package sla
 
 import (
-	"gopkg.in/macaroon.v2-unstable"
+	"gopkg.in/macaroon.v2"
 )
 
 // SLARequest defines the json used to post to sla service.
