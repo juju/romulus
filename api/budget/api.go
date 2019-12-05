@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/juju/errors"
-	"gopkg.in/macaroon-bakery.v1/httpbakery"
+	"gopkg.in/macaroon-bakery.v2/httpbakery"
 
 	"github.com/juju/romulus"
 	wireformat "github.com/juju/romulus/wireformat/budget"
@@ -26,7 +26,7 @@ type httpErrorResponse struct {
 }
 
 type httpClient interface {
-	DoWithBody(*http.Request, io.ReadSeeker) (*http.Response, error)
+	Do(*http.Request) (*http.Response, error)
 }
 
 type client struct {
@@ -208,14 +208,14 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		if err != nil {
 			return errors.Annotate(err, "failed to encode request")
 		}
-		r, err := http.NewRequest(method, u.String(), nil)
+		r, err := http.NewRequest(method, u.String(), bytes.NewReader(payload.Bytes()))
 		if err != nil {
 			return errors.Annotate(err, "failed to create request")
 		}
 		if ctype, ok := req.(hasContentType); ok {
 			r.Header.Add("Content-Type", ctype.ContentType())
 		}
-		resp, err = c.h.DoWithBody(r, bytes.NewReader(payload.Bytes()))
+		resp, err = c.h.Do(r)
 		if err != nil {
 			if strings.HasSuffix(err.Error(), "Connection refused") {
 				return common.NotAvailError{}
@@ -228,7 +228,7 @@ func (c *client) doRequest(req interface{}, result interface{}) error {
 		if err != nil {
 			return errors.Annotate(err, "failed to create request")
 		}
-		resp, err = c.h.DoWithBody(r, nil)
+		resp, err = c.h.Do(r)
 		if err != nil {
 			return errors.Annotate(err, "failed to execute request")
 		}
