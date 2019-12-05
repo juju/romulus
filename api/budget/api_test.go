@@ -6,7 +6,6 @@ package budget_test
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -48,7 +47,7 @@ func (t *TSuite) TestCreateWallet(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -74,7 +73,7 @@ func (t *TSuite) TestCreateWalletAPIRoot(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"http://httpbin.org/wallet",
@@ -99,7 +98,7 @@ func (t *TSuite) TestCreateWalletServerError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -122,7 +121,7 @@ func (t *TSuite) TestCreateWalletRequestError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -144,7 +143,7 @@ func (t *TSuite) TestCreateWalletUnavail(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -167,7 +166,7 @@ func (t *TSuite) TestCreateWalletConnRefused(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -234,7 +233,7 @@ func (t *TSuite) TestListWallets(c *gc.C) {
 	c.Assert(response, gc.DeepEquals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -256,7 +255,7 @@ func (t *TSuite) TestListWalletsServerError(c *gc.C) {
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -276,7 +275,7 @@ func (t *TSuite) TestListWalletsRequestError(c *gc.C) {
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet",
@@ -299,7 +298,7 @@ func (t *TSuite) TestSetWallet(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -325,7 +324,7 @@ func (t *TSuite) TestSetWalletServerError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -349,7 +348,7 @@ func (t *TSuite) TestSetWalletRequestError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -399,7 +398,7 @@ func (t *TSuite) TestGetWallet(c *gc.C) {
 	c.Assert(response, gc.DeepEquals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -421,7 +420,7 @@ func (t *TSuite) TestGetWalletServerError(c *gc.C) {
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -441,7 +440,7 @@ func (t *TSuite) TestGetWalletRequestError(c *gc.C) {
 	c.Assert(response, gc.IsNil)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"GET",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal",
@@ -464,7 +463,7 @@ func (t *TSuite) TestCreateBudget(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
@@ -489,7 +488,7 @@ func (t *TSuite) TestCreateBudgetServerError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
@@ -512,7 +511,7 @@ func (t *TSuite) TestCreateBudgetRequestError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"POST",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/wallet/personal/budget",
@@ -538,7 +537,7 @@ func (t *TSuite) TestUpdateBudget(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -565,7 +564,7 @@ func (t *TSuite) TestUpdateBudgetServerError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -590,7 +589,7 @@ func (t *TSuite) TestUpdateBudgetRequestError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"PATCH",
 				"application/json",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -617,7 +616,7 @@ func (t *TSuite) TestDeleteBudget(c *gc.C) {
 	c.Assert(response, gc.Equals, expected)
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"DELETE",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -639,7 +638,7 @@ func (t *TSuite) TestDeleteBudgetServerError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"DELETE",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -659,7 +658,7 @@ func (t *TSuite) TestDeleteBudgetRequestError(c *gc.C) {
 	c.Assert(response, gc.Equals, "")
 	httpClient.CheckCalls(c,
 		[]jujutesting.StubCall{{
-			"DoWithBody",
+			"Do",
 			[]interface{}{"DELETE",
 				"",
 				"https://api.jujucharms.com/omnibus/v3/model/model-uuid/budget",
@@ -674,8 +673,9 @@ type mockClient struct {
 	RespBody []byte
 }
 
-func (c *mockClient) DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Response, error) {
+func (c *mockClient) Do(req *http.Request) (*http.Response, error) {
 	requestData := map[string]interface{}{}
+	body := req.Body
 	if body != nil {
 		bodyBytes, err := ioutil.ReadAll(body)
 		if err != nil {
@@ -686,7 +686,7 @@ func (c *mockClient) DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Re
 			panic(err)
 		}
 	}
-	c.Stub.MethodCall(c, "DoWithBody", req.Method, req.Header.Get("Content-Type"), req.URL.String(), requestData)
+	c.Stub.MethodCall(c, "Do", req.Method, req.Header.Get("Content-Type"), req.URL.String(), requestData)
 
 	resp := &http.Response{
 		StatusCode: c.RespCode,

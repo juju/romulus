@@ -13,8 +13,8 @@ import (
 	"net/url"
 
 	"github.com/juju/errors"
-	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
-	"gopkg.in/macaroon.v2-unstable"
+	"gopkg.in/macaroon-bakery.v2/httpbakery"
+	"gopkg.in/macaroon.v2"
 
 	"github.com/juju/romulus"
 	wireformat "github.com/juju/romulus/wireformat/plan"
@@ -38,11 +38,6 @@ var _ AuthorizationClient = (*client)(nil)
 type httpClient interface {
 	// Do sends the given HTTP request and returns its response.
 	Do(*http.Request) (*http.Response, error)
-	// DoWithBody is like Do except that the given body is used
-	// for the body of the HTTP request, and reset to its start
-	// by seeking if the request is retried. It is an error if
-	// req.Body is non-zero.
-	DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Response, error)
 }
 
 // client is the implementation of the Client interface.
@@ -150,13 +145,13 @@ func (c *client) Authorize(environmentUUID, charmURL, serviceName, planURL strin
 		return nil, errors.Trace(err)
 	}
 
-	req, err := http.NewRequest("POST", u.String(), nil)
+	req, err := http.NewRequest("POST", u.String(), bytes.NewReader(buff.Bytes()))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	response, err := c.client.DoWithBody(req, bytes.NewReader(buff.Bytes()))
+	response, err := c.client.Do(req)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

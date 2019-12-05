@@ -13,7 +13,7 @@ import (
 	"net/url"
 
 	"github.com/juju/errors"
-	"gopkg.in/macaroon-bakery.v2-unstable/httpbakery"
+	"gopkg.in/macaroon-bakery.v2/httpbakery"
 
 	"github.com/juju/romulus"
 	"github.com/juju/romulus/wireformat/common"
@@ -33,7 +33,7 @@ type AuthClient interface {
 var _ AuthClient = (*client)(nil)
 
 type httpClient interface {
-	DoWithBody(req *http.Request, body io.ReadSeeker) (*http.Response, error)
+	Do(req *http.Request) (*http.Response, error)
 }
 
 // client is the implementation of the Client interface.
@@ -99,13 +99,13 @@ func (c *client) Authorize(modelUUID, supportLevel, budget string) (*sla.SLAResp
 		return nil, errors.Trace(err)
 	}
 
-	req, err := http.NewRequest("POST", u.String(), nil)
+	req, err := http.NewRequest("POST", u.String(), bytes.NewReader(buff.Bytes()))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	response, err := c.client.DoWithBody(req, bytes.NewReader(buff.Bytes()))
+	response, err := c.client.Do(req)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
