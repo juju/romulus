@@ -3,7 +3,7 @@ module github.com/juju/romulus
 go 1.14
 
 require (
-	github.com/go-macaroon-bakery/macaroon-bakery/v3 v3.0.0-20210302105820-5587392d1f47
+	github.com/go-macaroon-bakery/macaroon-bakery/v3 v3.0.0-20210309064400-d73aa8f92aa2
 	github.com/juju/clock v0.0.0-20180808021310-bab88fc67299 // indirect
 	github.com/juju/errors v0.0.0-20190930114154-d42613fe1ab9
 	github.com/juju/loggo v0.0.0-20180524022052-584905176618 // indirect
