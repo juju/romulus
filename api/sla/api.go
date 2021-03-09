@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/go-macaroon-bakery/macaroon-bakery/v3/httpbakery"
 	"github.com/juju/errors"
-	"gopkg.in/macaroon-bakery.v3/httpbakery"
 
 	"github.com/juju/romulus"
 	"github.com/juju/romulus/wireformat/common"
